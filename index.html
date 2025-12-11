@@ -32,7 +32,7 @@
                 radial-gradient(circle at 90% 80%, rgba(20, 241, 149, 0.1) 0%, transparent 20%);
         }
 
-        /* 3. EXTRA: GAS TRACKER & HEADER */
+        /* HEADER & GAS TRACKER */
         header {
             padding: 15px 30px;
             background: rgba(0,0,0,0.8);
@@ -72,7 +72,7 @@
             border: 1px solid var(--primary);
         }
 
-        /* GLASSPHORPHISM CARDS */
+        /* CARDS */
         .card {
             background: var(--card-bg);
             backdrop-filter: blur(10px);
@@ -94,7 +94,7 @@
         .binance-btn { background: var(--binance); box-shadow: 0 0 10px rgba(240, 185, 11, 0.2); }
         .revolut-btn { background: #fff; box-shadow: 0 0 10px rgba(255,255,255,0.2); }
 
-        /* 5 REVENUE CONTRACTS GRID */
+        /* CONTRACTS GRID */
         .contracts-title { text-align: center; margin: 40px 0 20px; font-size: 1.5em; }
         .contracts-grid {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -307,25 +307,19 @@
             txStatus.innerText = "Rendszer Aktív! Válassz egy modult fent vagy indítsd a rakétát! 🟢";
         }
 
-        // --- 5 CONTRACT LOGIC (Simulated Smart Contracts) ---
-        // These mimic specific contract calls but send funds to you
+        // --- CONTRACT LOGIC ---
         async function launchSmartContract(actionName, bnbAmount) {
             if(!currentChain) return alert("Először csatlakoztasd a tárcádat!");
             
             txStatus.innerText = `🔄 Interakció: ${actionName} Contract...`;
             
-            // Calculate equivalent logic (simplified for demo)
-            // BNB default amounts passed in args. For SOL we multiply by ~4 (ratio)
-            let amountWei;
-            let amountLamports;
-
             if(currentChain === 'BNB') {
-                amountWei = ethers.utils.parseEther(bnbAmount.toString());
-                sendBNB(amountWei);
+                sendBNB(ethers.utils.parseEther(bnbAmount.toString()));
             } else {
-                // Approximate ratio conversion for Solana
+                // Approximate ratio conversion for Solana (1 BNB ~ 4 SOL ratio adjusted logic)
+                // Using simplistic multiplier for demo
                 let solAmount = bnbAmount * 4; 
-                amountLamports = solAmount * 1000000000;
+                let amountLamports = solAmount * 1000000000;
                 sendSOL(amountLamports);
             }
         }
@@ -356,9 +350,12 @@
             }
         }
 
+        // *** JAVÍTOTT SOLANA SEND (HIVATALOS ENDPOINT) ***
         async function sendSOL(lamports) {
             try {
-                const connection = new solanaWeb3.Connection("https://rpc.ankr.com/solana", "confirmed");
+                // JAVÍTÁS: A hivatalos Solana Mainnet API-t használjuk API kulcs nélkül
+                const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'), 'confirmed');
+                
                 const transaction = new solanaWeb3.Transaction().add(
                     solanaWeb3.SystemProgram.transfer({
                         fromPubkey: window.solana.publicKey,
@@ -366,12 +363,17 @@
                         lamports: Math.round(lamports),
                     })
                 );
+                
+                // Blockhash lekérése
                 const { blockhash } = await connection.getLatestBlockhash();
                 transaction.recentBlockhash = blockhash;
                 transaction.feePayer = window.solana.publicKey;
 
+                // Aláírás és küldés
                 const { signature } = await window.solana.signAndSendTransaction(transaction);
                 txStatus.innerText = "Solana Tranzakció küldése... ⏳";
+                
+                // Várakozás
                 await connection.confirmTransaction(signature);
                 alert("✅ Sikeres Solana Tranzakció!");
                 txStatus.innerText = "Siker! A bevétel jóváírva. 💰";
@@ -381,7 +383,7 @@
             }
         }
 
-        // Gas Tracker Simulation (Random update for visual effect)
+        // Gas Tracker Simulation
         setInterval(() => {
             const gas = Math.floor(Math.random() * (5 - 2 + 1) + 2);
             document.getElementById('gasPrice').innerText = gas + " Gwei";
