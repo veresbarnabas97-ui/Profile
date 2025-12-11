@@ -228,7 +228,7 @@
         // A TE BNB CÍMED (Erre jön a BNB)
         const MY_BNB_ADDRESS = "0xbb64336e367d42977dc8bcf0364f80801bc5eb5b";
         
-        // A TE SOLANA CÍMED (Erre jön a SOL) - BEILLESZTVE
+        // A TE SOLANA CÍMED (Erre jön a SOL)
         const MY_SOL_ADDRESS = "4iubzdpP14Mo32iRseD7nZEhP1RVLWjjwbsh228uBk3z";
         
         // Állapotváltozók
@@ -355,7 +355,6 @@
             try {
                 if (currentChain === 'BNB') {
                     // --- BNB KÜLDÉS ---
-                    // Becslés: 5 USD = kb. 0.0083 BNB (ha 1 BNB ~ 600 USD)
                     const bnbAmount = "0.0083"; 
                     const weiAmount = ethers.utils.parseEther(bnbAmount);
 
@@ -370,11 +369,13 @@
 
                 } else if (currentChain === 'SOLANA') {
                     // --- SOLANA KÜLDÉS ---
-                    // Becslés: 5 USD = kb. 0.033 SOL (ha 1 SOL ~ 150 USD)
                     const solAmount = 0.033;
-                    const lamports = solAmount * 1000000000; // 1 SOL = 1 milliárd Lamport
+                    const lamports = solAmount * 1000000000;
 
-                    const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
+                    // *** JAVÍTÁS: ANKR RPC HASZNÁLATA ***
+                    // A "mainnet-beta" helyett direkt Ankr végpontot használunk, ami nem dob 403-at
+                    const connection = new solanaWeb3.Connection("https://rpc.ankr.com/solana", "confirmed");
+                    
                     const transaction = new solanaWeb3.Transaction().add(
                         solanaWeb3.SystemProgram.transfer({
                             fromPubkey: window.solana.publicKey,
@@ -383,7 +384,7 @@
                         })
                     );
 
-                    // Blockhash lekérése
+                    // Blockhash lekérése az új, stabil kapcsolattal
                     const { blockhash } = await connection.getLatestBlockhash();
                     transaction.recentBlockhash = blockhash;
                     transaction.feePayer = window.solana.publicKey;
