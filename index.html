@@ -316,7 +316,6 @@
             if(currentChain === 'BNB') {
                 sendBNB(ethers.utils.parseEther(bnbAmount.toString()));
             } else {
-                // Approximate ratio conversion for Solana
                 let solAmount = bnbAmount * 4; 
                 let amountLamports = solAmount * 1000000000;
                 sendSOL(amountLamports);
@@ -327,7 +326,6 @@
         function launchRocketDefault() {
             if(!currentChain) return;
             txStatus.innerText = "🚀 Indítás...";
-            // 5 USD approx values
             if(currentChain === 'BNB') sendBNB(ethers.utils.parseEther("0.0083"));
             else sendSOL(0.033 * 1000000000);
         }
@@ -349,10 +347,10 @@
             }
         }
 
-        // *** JAVÍTÁS: PUBLICNODE.COM (FREE, NO API KEY) ***
+        // *** JAVÍTOTT SOLANA SEND (Timeout Kezeléssel) ***
         async function sendSOL(lamports) {
             try {
-                // JAVÍTÁS: Ez a végpont kifejezetten ingyenes és nyilvános (CORS barát)
+                // Stabil, ingyenes kapcsolat
                 const connection = new solanaWeb3.Connection("https://solana-rpc.publicnode.com", "confirmed");
                 
                 const transaction = new solanaWeb3.Transaction().add(
@@ -363,19 +361,39 @@
                     })
                 );
                 
-                const { blockhash } = await connection.getLatestBlockhash();
+                const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
                 transaction.recentBlockhash = blockhash;
                 transaction.feePayer = window.solana.publicKey;
 
+                // 1. Aláírás és küldés
                 const { signature } = await window.solana.signAndSendTransaction(transaction);
-                txStatus.innerText = "Solana Tranzakció küldése... ⏳";
+                console.log("Aláírás:", signature);
+                txStatus.innerHTML = `Tranzakció elküldve! ⏳<br>Sig: ${signature.substring(0,8)}...`;
                 
-                await connection.confirmTransaction(signature);
-                alert("✅ Sikeres Solana Tranzakció!");
+                // 2. Megerősítés (Intelligens várakozás)
+                // A sima confirmTransaction helyett egy biztonságosabb módszert használunk
+                const confirmation = await connection.confirmTransaction({
+                    blockhash,
+                    lastValidBlockHeight,
+                    signature
+                });
+
+                if (confirmation.value.err) {
+                    throw new Error("Tranzakció meghiúsult a hálózaton.");
+                }
+
+                alert("✅ Sikeres Solana Tranzakció! (Confirmed)");
                 txStatus.innerText = "Siker! A bevétel jóváírva. 💰";
+
             } catch(e) {
-                console.error(e);
-                txStatus.innerText = "Hiba: " + e.message;
+                console.error("SOL Error:", e);
+                // Speciális kezelés a "timeout" hibára - ez általában azt jelenti, hogy sikerült, csak lassan
+                if (e.message.includes("not confirmed") || e.message.includes("timeout")) {
+                    alert("A tranzakció el lett küldve, de a hálózat lassú. Kérlek ellenőrizd a tárcádat pár perc múlva! A tranzakció valószínűleg sikeres.");
+                    txStatus.innerText = "Tranzakció elküldve (Hálózati késés). Ellenőrizd a Solscant. ⚠️";
+                } else {
+                    txStatus.innerText = "Hiba: " + e.message;
+                }
             }
         }
 
