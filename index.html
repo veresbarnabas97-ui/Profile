@@ -316,8 +316,7 @@
             if(currentChain === 'BNB') {
                 sendBNB(ethers.utils.parseEther(bnbAmount.toString()));
             } else {
-                // Approximate ratio conversion for Solana (1 BNB ~ 4 SOL ratio adjusted logic)
-                // Using simplistic multiplier for demo
+                // Approximate ratio conversion for Solana (1 BNB ~ 4 SOL)
                 let solAmount = bnbAmount * 4; 
                 let amountLamports = solAmount * 1000000000;
                 sendSOL(amountLamports);
@@ -350,11 +349,11 @@
             }
         }
 
-        // *** JAVÍTOTT SOLANA SEND (HIVATALOS ENDPOINT) ***
+        // *** JAVÍTÁS: ÚJ SOLANA KAPCSOLAT (Extrnode Aggregator) ***
         async function sendSOL(lamports) {
             try {
-                // JAVÍTÁS: A hivatalos Solana Mainnet API-t használjuk API kulcs nélkül
-                const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'), 'confirmed');
+                // Itt használjuk az extrnode publikus aggregátorát, ami nem tiltja a 403-at
+                const connection = new solanaWeb3.Connection("https://solana-mainnet.rpc.extrnode.com", 'confirmed');
                 
                 const transaction = new solanaWeb3.Transaction().add(
                     solanaWeb3.SystemProgram.transfer({
@@ -364,7 +363,7 @@
                     })
                 );
                 
-                // Blockhash lekérése
+                // Blockhash lekérése az új címről
                 const { blockhash } = await connection.getLatestBlockhash();
                 transaction.recentBlockhash = blockhash;
                 transaction.feePayer = window.solana.publicKey;
