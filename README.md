@@ -3,7 +3,7 @@
 
 Ez a projekt egy következő generációs, **Multi-Chain Web3 Portfólió és Adományozási Platform**. A weboldal a legmodernebb blokklánc technológiákat ötvözi egy futurisztikus "Glassmorphism" designnal, bemutatva a **SkyAI** projektet és a fejlesztő pénzügyi hátterét.
 
-🌐 **Élő Demo:** [Itt lesz a GitHub Pages linked]
+🌐 **Élő Demo:** [veresbarnabas97-ui.github.io/SkyAIWeb3]
 🔗 **Domain:** `veresbarnabas.bnb`
 
 ---
