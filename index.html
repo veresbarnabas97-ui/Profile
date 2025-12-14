@@ -38,15 +38,15 @@
 </head>
 <body>
 
-    <a href="../index.html" class="back-link"><i class="fas fa-arrow-left"></i> BACK TO TERMINAL</a>
+    <a href="https://veresbarnabas97-ui.github.io/SkyAI/" class="back-link"><i class="fas fa-arrow-left"></i> BACK TO TERMINAL</a>
 
     <div class="container">
         <div class="card">
-            <img src="../cv.jpg" style="width:120px; height:120px; border-radius:50%; border:3px solid #d4af37; margin-bottom:20px; object-fit: cover;" onerror="this.style.display='none'">
+            <img src="../cv.jpg" style="width:120px; height:120px; border-radius:50%; border:3px solid #d4af37; margin-bottom:20px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/150'">
             <h1>Veres Barnabás</h1>
             <div class="role">SkyAI Founder & Lead Developer</div>
             <p class="bio">
-                "Disciplined innovator with 7+ years of high-precision experience. Architecting the future of Decentralized AI Trading to bridge the gap between human intuition and machine efficiency."
+                "Disciplined innovator with 7+ years of experience. Architecting the future of Decentralized AI Trading to bridge the gap between human intuition and machine efficiency."
             </p>
             
             <div class="info-row">
@@ -102,10 +102,16 @@
             const status = document.getElementById('txStatus');
             
             if (network === 'BNB') {
-                if(chain !== 'BSC') { alert("Please connect BSC Wallet in Terminal!"); return; }
+                if(!window.ethereum && /Mobi|Android/i.test(navigator.userAgent)) {
+                     window.location.href = "https://metamask.app.link/dapp/veresbarnabas97-ui.github.io/Profile/";
+                     return;
+                }
+                if(!window.ethereum) { alert("MetaMask nem található!"); return; }
+
                 status.innerText = "Initiating BNB Transaction...";
                 
                 try {
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
                     const provider = new ethers.providers.Web3Provider(window.ethereum);
                     const signer = provider.getSigner();
                     const tx = await signer.sendTransaction({
@@ -115,11 +121,17 @@
                     status.innerText = "BNB Sent! 🚀";
                     await tx.wait();
                     alert("Support Received via BSC!");
-                } catch(e) { status.innerText = "Failed."; }
+                } catch(e) { status.innerText = "Failed: " + e.message; }
             } 
             
             else if (network === 'SOL') {
-                if(chain !== 'SOL') { alert("Please connect Phantom Wallet in Terminal!"); return; }
+                if(!window.solana) {
+                    if (/Mobi|Android/i.test(navigator.userAgent)) {
+                        window.location.href = "https://phantom.app/ul/browse/veresbarnabas97-ui.github.io/Profile/";
+                        return;
+                    }
+                    alert("Phantom Wallet nincs telepítve!"); return;
+                }
                 status.innerText = "Initiating SOL Transaction...";
 
                 try {
