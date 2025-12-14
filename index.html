@@ -3,375 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkyAI | Decentralized Intelligence</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
-    <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
+    <title>SkyAI Dashboard | VIP Area</title>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
 
     <style>
-        /* --- CORE VARIABLES --- */
-        :root {
-            --primary: #00d4ff;       /* SkyAI Cyan */
-            --secondary: #14f195;     /* Solana Green */
-            --bg-deep: #020205;       /* Deep Black */
-            --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --text-main: #ffffff;
-            --text-muted: #94a3b8;
-        }
-
-        /* --- GLOBAL RESET --- */
-        * { box-sizing: border-box; scroll-behavior: smooth; }
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-deep);
-            color: var(--text-main);
-            margin: 0; padding: 0;
-            overflow-x: hidden;
-        }
-
-        /* --- ANIMATED BACKGROUND --- */
-        .bg-glow {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: 
-                radial-gradient(circle at 15% 50%, rgba(0, 212, 255, 0.08), transparent 25%),
-                radial-gradient(circle at 85% 30%, rgba(20, 241, 149, 0.05), transparent 25%);
-            z-index: -1; pointer-events: none;
-        }
-
-        /* --- NAVBAR --- */
-        nav {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 20px 5%;
-            position: fixed; top: 0; width: 100%;
-            background: rgba(2, 2, 5, 0.8);
-            backdrop-filter: blur(15px);
-            border-bottom: 1px solid var(--glass-border);
-            z-index: 1000;
-        }
-        .nav-logo { font-size: 1.5rem; font-weight: 800; color: var(--text-main); letter-spacing: -1px; }
-        .nav-logo span { color: var(--primary); }
+        body { background: #020205; color: #fff; font-family: 'Exo 2', sans-serif; margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; }
         
-        .nav-links { display: flex; gap: 30px; }
-        .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; transition: 0.3s; }
-        .nav-links a:hover { color: var(--primary); }
-
-        .btn-connect {
-            background: var(--text-main); color: #000;
-            padding: 10px 24px; border-radius: 50px; border: none;
-            font-weight: 600; cursor: pointer; transition: 0.3s;
-        }
-        .btn-connect:hover { transform: translateY(-2px); box-shadow: 0 0 20px rgba(255,255,255,0.3); }
-
-        /* --- HERO SECTION --- */
-        .hero {
-            height: 100vh; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; text-align: center;
-            padding: 0 20px;
-        }
-        .hero h1 {
-            font-size: 4rem; line-height: 1.1; margin-bottom: 20px;
-            background: linear-gradient(to right, #fff, #94a3b8);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .hero p { font-size: 1.2rem; color: var(--text-muted); max-width: 600px; margin-bottom: 40px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; border-bottom: 1px solid #333; padding-bottom: 20px; }
+        .logo { font-size: 1.5rem; font-weight: bold; color: #00d2ff; }
+        .back-link { color: #888; text-decoration: none; font-size: 0.9rem; }
         
-        .hero-buttons { display: flex; gap: 20px; }
-        .btn-primary {
-            background: var(--primary); color: #000;
-            padding: 15px 35px; border-radius: 8px; text-decoration: none;
-            font-weight: 700; transition: 0.3s; border: none; cursor: pointer;
-        }
-        .btn-primary:hover { box-shadow: 0 0 30px rgba(0, 212, 255, 0.4); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
         
-        .btn-secondary {
-            background: transparent; color: #fff; border: 1px solid var(--glass-border);
-            padding: 15px 35px; border-radius: 8px; text-decoration: none;
-            font-weight: 600; transition: 0.3s;
-        }
-        .btn-secondary:hover { border-color: var(--primary); }
+        .card { background: #0b0b10; border: 1px solid #222; padding: 30px; border-radius: 12px; }
+        .card h3 { color: #888; margin-top: 0; font-size: 0.9rem; text-transform: uppercase; }
+        .card .value { font-size: 2rem; font-weight: bold; margin: 10px 0; }
+        .card .sub { font-size: 0.8rem; color: #666; }
 
-        /* --- TOKENOMICS / INFO GRID --- */
-        .section-container { max-width: 1200px; margin: 100px auto; padding: 0 20px; }
-        .section-title { font-size: 2rem; margin-bottom: 50px; text-align: center; }
-        
-        .info-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-        }
-        .card {
-            background: var(--glass); border: 1px solid var(--glass-border);
-            padding: 30px; border-radius: 16px; transition: 0.3s;
-        }
-        .card:hover { transform: translateY(-5px); border-color: var(--primary); }
-        .card h3 { color: var(--primary); margin-top: 0; }
-        .card p { color: var(--text-muted); line-height: 1.6; }
-
-        /* --- FOUNDER SECTION (Professional) --- */
-        .founder-section {
-            display: flex; align-items: center; gap: 50px;
-            background: linear-gradient(90deg, rgba(255,255,255,0.03), transparent);
-            padding: 60px; border-radius: 20px; border: 1px solid var(--glass-border);
-        }
-        .founder-img {
-            width: 150px; height: 150px; border-radius: 50%;
-            object-fit: cover; border: 2px solid var(--primary);
-            box-shadow: 0 0 30px rgba(0, 212, 255, 0.2);
-        }
-        
-        /* --- CONTRACT BOX --- */
-        .contract-box {
-            background: #000; padding: 15px; border-radius: 8px;
-            font-family: monospace; border: 1px solid #333; display: flex;
-            justify-content: space-between; align-items: center; margin-top: 20px;
-        }
-        .contract-addr { color: var(--secondary); word-break: break-all; }
-        .copy-icon { cursor: pointer; color: #fff; }
-
-        /* --- WALLET BADGE --- */
-        .wallet-badge {
-            display: inline-block; padding: 5px 10px; background: rgba(20, 241, 149, 0.1);
-            border: 1px solid var(--secondary); border-radius: 5px; color: var(--secondary);
-            font-family: monospace; font-size: 0.85rem; margin-top: 10px;
-        }
-
-        /* --- MODAL --- */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); display: none;
-            justify-content: center; align-items: center; z-index: 2000;
-            backdrop-filter: blur(10px);
-        }
-        .modal-box {
-            background: #111; padding: 40px; border-radius: 20px; width: 350px;
-            border: 1px solid #333; text-align: center;
-        }
-        .wallet-btn {
-            width: 100%; padding: 15px; margin: 10px 0;
-            background: #222; border: 1px solid #333; color: #fff;
-            border-radius: 10px; cursor: pointer; display: flex;
-            align-items: center; justify-content: center; gap: 10px; font-weight: bold;
-            transition: 0.2s;
-        }
-        .wallet-btn:hover { background: #333; border-color: #fff; }
-
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 2.5rem; }
-            .founder-section { flex-direction: column; text-align: center; padding: 30px; }
-            .nav-links { display: none; } 
-            .hero-buttons { flex-direction: column; }
-        }
+        .vip-active { border-color: #ffd700; box-shadow: 0 0 15px rgba(255, 215, 0, 0.1); }
+        .vip-text { color: #ffd700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
     </style>
 </head>
 <body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">SKYAI DASHBOARD</div>
+            <a href="../index.html" class="back-link">← Back to Home</a>
+        </div>
 
-    <div class="bg-glow"></div>
+        <div style="margin-bottom: 20px;">
+            User: <span id="userAddress" style="font-family:monospace; color:#00d2ff;">Loading...</span>
+        </div>
 
-    <div class="modal-overlay" id="walletModal">
-        <div class="modal-box">
-            <h3 style="margin-top: 0;">Connect Wallet</h3>
-            <p style="color:#666; font-size:0.9rem; margin-bottom:20px;">Choose your preferred network</p>
-            
-            <button class="wallet-btn" onclick="connectBNB()">
-                <span style="color:#F6851B">🦊</span> MetaMask (BNB)
-            </button>
-            
-            <button class="wallet-btn" onclick="connectSolana()">
-                <span style="color:#14f195">🟣</span> Phantom (Solana)
-            </button>
-            
-            <button onclick="closeModal()" style="background:none; border:none; color:#666; margin-top:15px; cursor:pointer;">Cancel</button>
+        <div class="grid">
+            <div class="card" id="statusCard">
+                <h3>Membership Status</h3>
+                <div class="value" id="membershipLevel">Loading...</div>
+                <div class="sub">Requirement: 5,000 SKY</div>
+            </div>
+
+            <div class="card">
+                <h3>SKY Balance</h3>
+                <div class="value" id="skyBalance">0.00</div>
+                <div class="sub">Contract: 0xcBba...fa83</div>
+            </div>
+
+            <div class="card">
+                <h3>BNB Balance</h3>
+                <div class="value" id="nativeBalance">0.00</div>
+                <div class="sub">Native Wallet</div>
+            </div>
         </div>
     </div>
 
-    <nav>
-        <div class="nav-logo">SKY<span>AI</span></div>
-        <div class="nav-links">
-            <a href="#token">Token</a>
-            <a href="#vision">Vision</a>
-            <a href="#founder">Founder</a>
-        </div>
-        <button id="connectBtn" class="btn-connect" onclick="openModal()">Connect Wallet</button>
-    </nav>
-
-    <section class="hero">
-        <div style="margin-bottom: 20px;">
-            <span style="background: rgba(0, 212, 255, 0.1); color: var(--primary); padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; border: 1px solid rgba(0, 212, 255, 0.3);">
-                v4.1 SYSTEM ONLINE
-            </span>
-        </div>
-        <h1>The Future of <br>Decentralized Intelligence</h1>
-        <p>SkyAI combines the power of Artificial Intelligence with the security of Blockchain. Automated trading signals, governance, and a vision for a smarter Web3.</p>
-        
-        <div class="hero-buttons">
-            <button class="btn-primary" onclick="copyContract()">Copy Contract</button>
-            <a href="#founder" class="btn-secondary">Meet the Founder</a>
-        </div>
-    </section>
-
-    <section id="token" class="section-container">
-        <div class="section-title">Tokenomics & Data</div>
-        <div class="info-grid">
-            <div class="card">
-                <h3>💎 Sky Token</h3>
-                <p>The native utility token of the ecosystem. Holders gain access to VIP signals and governance rights.</p>
-                <div style="margin-top:20px;">
-                    <small style="color:#666;">Network</small><br>
-                    <strong>Binance Smart Chain (BSC)</strong>
-                </div>
-            </div>
-            
-            <div class="card">
-                <h3>📜 Contract Address</h3>
-                <p>Official Verification</p>
-                <div class="contract-box">
-                    <span class="contract-addr" id="dispContract">0xcBba...fa83</span>
-                    <span class="copy-icon" onclick="copyContract()">📋</span>
-                </div>
-                <p style="font-size:0.8rem; color:var(--text-muted); margin-top:10px;">Click icon to copy full address</p>
-            </div>
-
-            <div class="card">
-                <h3>🚀 Utility</h3>
-                <ul style="list-style: none; padding: 0; color: var(--text-muted);">
-                    <li style="margin-bottom:10px;">✅ <strong>AI Signals:</strong> Access to Brain v3.0</li>
-                    <li style="margin-bottom:10px;">✅ <strong>Staking:</strong> Earn rewards (Coming Soon)</li>
-                    <li>✅ <strong>Governance:</strong> Vote on SkyAI future</li>
-                </ul>
-            </div>
-        </div>
-    </section>
-
-    <section id="founder" class="section-container">
-        <div class="founder-section">
-            <img src="cv.jpg" alt="Veres Barnabás" class="founder-img" onerror="this.style.display='none'">
-            <div>
-                <h2 style="margin-top:0;">Architected by Veres Barnabás</h2>
-                <p style="color:var(--primary); margin-bottom: 20px;">Founder & Lead Developer</p>
-                <p style="color:var(--text-muted);">
-                    "I am building SkyAI to bridge the gap between human intuition and machine precision. With over 7 years of disciplined experience, I am bringing a new standard of reliability to the Web3 space."
-                </p>
-                
-                <div style="margin-top: 25px;">
-                    <div style="margin-bottom: 5px; color:#888; font-size:0.9rem;">Verified Founder Wallet:</div>
-                    <div class="wallet-badge">0xc98415672A80a26bEC29427b7284D65B73c5Ff7B</div>
-                </div>
-
-                <div style="margin-top: 20px;">
-                    <a href="mailto:veres.barnabas97@gmail.com" style="color: #fff; text-decoration: none; border-bottom: 1px dotted var(--primary);">veres.barnabas97@gmail.com</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <footer style="text-align: center; padding: 50px; color: #444; border-top: 1px solid #111;">
-        <p>&copy; 2025 SkyAI Project. All Rights Reserved.</p>
-    </footer>
-
     <script>
-        // --- CONFIG ---
-        // A te általad megadott Contract Address
-        const FULL_CONTRACT = "0xcBbaDC40Cde0F12679a6b0b74fB732E02E60fa83";
+        const TOKEN_ADDRESS = "0xcBbaDC40Cde0F12679a6b0b74fB732E02E60fa83";
+        const VIP_LIMIT = 5000;
+        const TOKEN_ABI = ["function balanceOf(address owner) view returns (uint256)", "function decimals() view returns (uint8)"];
 
-        // --- UI ELEMENTS ---
-        const modal = document.getElementById('walletModal');
-        const connectBtn = document.getElementById('connectBtn');
-        const dispContract = document.getElementById('dispContract');
-
-        // --- INIT ---
-        window.addEventListener('load', () => {
-            // Contract kijelzés frissítése
-            dispContract.innerText = FULL_CONTRACT.substring(0,6) + "..." + FULL_CONTRACT.substring(FULL_CONTRACT.length-4);
-
+        window.onload = async function() {
             const savedAddress = localStorage.getItem('skyai_wallet');
-            const savedChain = localStorage.getItem('skyai_chain');
-            if (savedAddress && savedChain) {
-                updateUIState(savedAddress, savedChain);
-            }
-        });
+            if (!savedAddress) { window.location.href = "../index.html"; return; }
 
-        // --- MODAL LOGIC ---
-        function openModal() { modal.style.display = 'flex'; }
-        function closeModal() { modal.style.display = 'none'; }
+            document.getElementById('userAddress').innerText = savedAddress;
 
-        // --- 1. METAMASK (BNB) ---
-        async function connectBNB() {
-            closeModal();
-            if (typeof window.ethereum === 'undefined') {
-                alert("MetaMask is not installed!");
-                return;
-            }
+            const provider = new ethers.providers.JsonRpcProvider("https://bsc-dataseed.binance.org/");
             
             try {
-                const provider = new ethers.providers.Web3Provider(window.ethereum);
-                await provider.send("eth_requestAccounts", []);
-                const signer = provider.getSigner();
-                const address = await signer.getAddress();
+                // BNB Balance
+                const balanceBNB = await provider.getBalance(savedAddress);
+                document.getElementById('nativeBalance').innerText = parseFloat(ethers.utils.formatEther(balanceBNB)).toFixed(4);
 
-                // Check Chain ID (56 for BSC Mainnet)
-                const { chainId } = await provider.getNetwork();
-                if (chainId !== 56) {
-                    try {
-                        await window.ethereum.request({
-                            method: 'wallet_switchEthereumChain',
-                            params: [{ chainId: '0x38' }], // Hex for 56
-                        });
-                    } catch (e) {
-                        console.log("Switch rejected or failed", e);
-                    }
+                // Token Balance
+                const contract = new ethers.Contract(TOKEN_ADDRESS, TOKEN_ABI, provider);
+                const rawBalance = await contract.balanceOf(savedAddress);
+                const tokenBalance = parseFloat(ethers.utils.formatEther(rawBalance));
+
+                document.getElementById('skyBalance').innerText = tokenBalance.toLocaleString();
+
+                // VIP Check
+                if (tokenBalance >= VIP_LIMIT) {
+                    document.getElementById('membershipLevel').innerText = "★ VIP MEMBER";
+                    document.getElementById('membershipLevel').classList.add('vip-text');
+                    document.getElementById('statusCard').classList.add('vip-active');
+                } else {
+                    document.getElementById('membershipLevel').innerText = "Free User";
                 }
-                
-                finalizeLogin(address, 'BNB');
-
-            } catch (error) {
-                console.error(error);
-                alert("Connection failed: " + error.message);
+            } catch (e) {
+                console.error(e);
             }
-        }
-
-        // --- 2. PHANTOM (SOLANA) ---
-        async function connectSolana() {
-            closeModal();
-            if (!window.solana || !window.solana.isPhantom) {
-                alert("Phantom Wallet is not installed!");
-                window.open("https://phantom.app/", "_blank");
-                return;
-            }
-
-            try {
-                const resp = await window.solana.connect();
-                finalizeLogin(resp.publicKey.toString(), 'SOLANA');
-            } catch (err) {
-                console.error(err);
-            }
-        }
-
-        // --- SHARED LOGIN LOGIC ---
-        function finalizeLogin(address, chain) {
-            // Save to LocalStorage for Profile Page
-            localStorage.setItem('skyai_wallet', address);
-            localStorage.setItem('skyai_chain', chain);
-
-            updateUIState(address, chain);
-        }
-
-        function updateUIState(address, chain) {
-            connectBtn.innerHTML = "Dashboard ➔";
-            connectBtn.style.background = "var(--primary)";
-            connectBtn.onclick = () => {
-                // Redirect to Profile
-                window.location.href = "Profile/index.html";
-            };
-        }
-
-        // --- UTILS ---
-        function copyContract() {
-            navigator.clipboard.writeText(FULL_CONTRACT).then(() => {
-                alert("Contract Address Copied!\n" + FULL_CONTRACT);
-            });
-        }
+        };
     </script>
 </body>
 </html>
