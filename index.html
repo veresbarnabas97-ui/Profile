@@ -104,7 +104,7 @@
             vertical-align: middle; margin-left: 10px;
         }
 
-        /* JELZÉSEK SZEKCIÓ (AI Brain) */
+        /* JELZÉSEK SZEKCIÓ */
         .signal-box {
             background: #111; border: 1px dashed #444; border-radius: 12px; padding: 20px;
             margin-top: 20px; min-height: 150px; display: flex; align-items: center; justify-content: center;
@@ -112,12 +112,36 @@
         }
         .blur-text { filter: blur(5px); user-select: none; opacity: 0.5; }
 
+        /* --- MOBIL OPTIMALIZÁLÁS (CSS ARMOR) --- */
         @media (max-width: 768px) {
-            .dashboard-container { flex-direction: column; }
-            .sidebar { width: 100%; flex-direction: row; overflow-x: auto; padding: 10px; box-sizing: border-box; }
-            .menu-item { white-space: nowrap; }
+            .dashboard-container { flex-direction: column !important; }
+            
+            /* Menüsor fentre ragasztva */
+            .sidebar { 
+                width: 100% !important; 
+                height: auto; 
+                flex-direction: row; 
+                overflow-x: auto; /* Görgethető oldalra */
+                white-space: nowrap;
+                padding: 10px; 
+                box-sizing: border-box;
+                position: sticky;
+                top: 0;
+                z-index: 100;
+                background: #000;
+                border-bottom: 1px solid #333;
+            }
+            
             .logo { display: none; }
-            .main-content { padding: 20px; }
+            .btn-logout { padding: 5px 10px; font-size: 0.8rem; }
+            
+            .main-content { padding: 15px; }
+            
+            /* Kártyák egymás alá kényszerítése */
+            .stats-grid { display: flex; flex-direction: column; gap: 15px; }
+            
+            header { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .user-badge { width: 100%; text-align: center; box-sizing: border-box; }
         }
     </style>
 </head>
@@ -130,7 +154,7 @@
             <div class="menu-item" onclick="showSection('signals')">🤖 AI Jelzések</div>
             <div class="menu-item" onclick="window.open('https://t.me/SkyAI00bot1', '_blank')">💬 Telegram Csoport</div>
             
-            <button class="btn-logout" onclick="logout()">Kijelentkezés</button>
+            <button class="btn-logout" onclick="logout()">Kilépés</button>
         </div>
 
         <div class="main-content">
@@ -187,11 +211,10 @@
     </div>
 
     <script>
-        // *** KONFIGURÁCIÓ (A config.py alapján) ***
-        const TOKEN_ADDRESS = "0xcBbaDC40Cde0F12679a6b0b74fB732E02E60fa83"; // A Contractod
+        // *** KONFIGURÁCIÓ ***
+        const TOKEN_ADDRESS = "0xcBbaDC40Cde0F12679a6b0b74fB732E02E60fa83"; 
         const VIP_LIMIT = 5000;
         
-        // Minimalista ABI csak a 'balanceOf' függvényhez
         const TOKEN_ABI = [
             "function balanceOf(address owner) view returns (uint256)",
             "function decimals() view returns (uint8)"
@@ -202,56 +225,48 @@
             const savedChain = localStorage.getItem('skyai_chain');
 
             if (!savedAddress) {
-                // Ha nincs bejelentkezve, visszaküldjük a főoldalra
+                // Ha nincs cím, visszairányítunk, DE adunk egy kis időt a böngészőnek
+                console.log("Nincs bejelentkezve, irány vissza...");
                 window.location.href = "index.html";
                 return;
             }
 
-            // Cím megjelenítése a fejlécben
             document.getElementById('userAddress').innerText = savedAddress.substring(0,6) + "..." + savedAddress.substring(savedAddress.length-4);
-            document.getElementById('nativeSymbol').innerText = savedChain;
+            document.getElementById('nativeSymbol').innerText = savedChain || "BSC";
 
-            // ADATOK BETÖLTÉSE
-            if (savedChain === 'BNB') {
+            if (savedChain === 'BNB' || !savedChain) { // Default to BNB ha nincs chain adat
                 await loadBNBData(savedAddress);
             } else {
-                // Solana logika (egyszerűsített Placeholder, ha később SOL-t is akarsz a tokenhez)
                 document.getElementById('skyBalance').innerText = "BSC Only";
                 document.getElementById('membershipLevel').innerText = "Free Member";
             }
         };
 
         async function loadBNBData(userAddress) {
-            // Ethers provider (BSC Mainnet RPC)
-            // Publikus endpointot használunk olvasásra
             const provider = new ethers.providers.JsonRpcProvider("https://bsc-dataseed.binance.org/");
             
             try {
-                // 1. Native BNB Egyenleg lekérése
+                // 1. BNB Egyenleg
                 const balanceBNB = await provider.getBalance(userAddress);
                 document.getElementById('nativeBalance').innerText = parseFloat(ethers.utils.formatEther(balanceBNB)).toFixed(4);
 
-                // 2. SKY Token Egyenleg lekérése a Contractból
+                // 2. SKY Token
                 const contract = new ethers.Contract(TOKEN_ADDRESS, TOKEN_ABI, provider);
                 const rawTokenBalance = await contract.balanceOf(userAddress);
-                
-                // 18 tizedesjeggyel számolunk (standard ERC20/BEP20)
                 const tokenBalance = parseFloat(ethers.utils.formatEther(rawTokenBalance));
 
-                // UI Frissítés (Egyenleg kiírása)
                 document.getElementById('skyBalance').innerText = tokenBalance.toLocaleString('hu-HU', {maximumFractionDigits: 2});
 
-                // 3. VIP Státusz Ellenőrzés
+                // 3. VIP Check
                 if (tokenBalance >= VIP_LIMIT) {
                     activateVIP();
                 } else {
                     document.getElementById('membershipLevel').innerText = "Free Member";
                     document.getElementById('membershipLevel').style.color = "#888";
                 }
-
             } catch (error) {
-                console.error("Hiba az adatok lekérésekor:", error);
-                document.getElementById('skyBalance').innerText = "Hiba";
+                console.error("Hiba:", error);
+                document.getElementById('skyBalance').innerText = "Hiba (Hálózat?)";
             }
         }
 
@@ -261,17 +276,14 @@
             levelText.style.color = "var(--vip-gold)";
             levelText.style.textShadow = "0 0 10px rgba(255,215,0,0.5)";
             
-            // Kártya stílus módosítása
             document.getElementById('statusCard').classList.add('vip-card');
             document.getElementById('vipProgress').innerText = "Jogosult vagy az AI Jelzésekre!";
             
-            // VIP Tartalom (AI Jelzések) feloldása
             document.getElementById('freeContent').style.display = 'none';
             document.getElementById('vipContent').style.display = 'block';
         }
 
         function logout() {
-            // Kilépéskor töröljük a localStorage-t és visszaugrunk
             localStorage.removeItem('skyai_wallet');
             localStorage.removeItem('skyai_chain');
             window.location.href = "index.html";
@@ -279,7 +291,6 @@
 
         function showSection(section) {
             console.log("Navigálás:", section);
-            // Itt lehetne később több aloldalt kezelni (pl. Settings tab)
         }
     </script>
 </body>
