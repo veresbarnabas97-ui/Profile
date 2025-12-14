@@ -3,355 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkyAI | Web3 Business Ecosystem</title>
+    <title>SkyAI | Pilot Dashboard</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
     <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
 
     <style>
-        :root {
-            --bg-deep: #020205;
-            --bg-panel: #0b0b10;
-            --primary: #00d2ff;     /* SkyAI Cyan */
-            --secondary: #0078ff;   /* Deep Blue */
-            --solana: #14f195;      /* Solana Green */
-            --accent: #d4af37;      /* Gold */
-            --text-main: #ffffff;
-            --text-muted: #94a3b8;
-            --container-width: 1200px;
-        }
-
-        /* --- GLOBAL RESET --- */
-        body {
-            background-color: var(--bg-deep);
-            color: var(--text-main);
-            font-family: 'Exo 2', sans-serif;
-            margin: 0; padding: 0; overflow-x: hidden;
-            background-image: radial-gradient(circle at 50% 10%, rgba(0, 210, 255, 0.05) 0%, transparent 40%);
-        }
+        body { background: #020205; color: #fff; font-family: 'Exo 2', sans-serif; margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; }
         
-        .container { max-width: var(--container-width); margin: 0 auto; padding: 0 20px; }
-        a { text-decoration: none; color: inherit; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 20px; margin-bottom: 30px; }
+        .logo { font-size: 1.5rem; font-weight: bold; color: #00d2ff; }
+        .back-link { color: #666; text-decoration: none; }
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        
+        .card { background: #0b0b10; border: 1px solid #333; padding: 30px; border-radius: 12px; }
+        .card h3 { margin-top: 0; color: #888; font-size: 0.9rem; text-transform: uppercase; }
+        .value { font-size: 2rem; font-weight: bold; margin: 10px 0; }
+        .sub { font-size: 0.8rem; color: #555; }
+        
+        .vip-active { border-color: #ffd700; box-shadow: 0 0 20px rgba(255,215,0,0.1); }
+        .vip-text { color: #ffd700; text-shadow: 0 0 10px #ffd700; }
 
-        /* --- BUTTONS --- */
-        .btn {
-            padding: 12px 28px; border-radius: 4px; font-family: 'Rajdhani', sans-serif;
-            font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
-            cursor: pointer; display: inline-flex; align-items: center; gap: 10px;
-            border: none; transition: 0.3s;
+        /* ROCKET DONATION */
+        .rocket-box {
+            grid-column: 1 / -1; margin-top: 40px; text-align: center;
+            background: linear-gradient(180deg, rgba(20,241,149,0.05), rgba(0,212,255,0.05));
+            border: 1px dashed #444; border-radius: 20px; padding: 40px;
         }
-        .btn-glow {
-            background: linear-gradient(90deg, var(--secondary), var(--primary)); color: #000;
-            box-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
+        .rocket-btn {
+            font-size: 4rem; background: none; border: none; cursor: pointer; transition: 0.4s;
         }
-        .btn-glow:hover { transform: translateY(-2px); box-shadow: 0 0 40px rgba(0, 210, 255, 0.6); color: #fff; }
-        .btn-outline {
-            background: rgba(255,255,255,0.05); border: 1px solid var(--primary); color: var(--primary);
-        }
-        .btn-solana {
-            background: rgba(20, 241, 149, 0.1); border: 1px solid var(--solana); color: var(--solana);
-        }
-        .btn-solana:hover { background: var(--solana); color: #000; }
+        .rocket-btn:hover { transform: scale(1.2) rotate(-10deg); filter: drop-shadow(0 0 15px #fff); }
 
-        /* --- HEADER --- */
-        nav {
-            padding: 20px 0; background: rgba(2, 2, 5, 0.95);
-            border-bottom: 1px solid rgba(255,255,255,0.1); position: sticky; top: 0; z-index: 1000;
-        }
-        .nav-content { display: flex; justify-content: space-between; align-items: center; }
-        .brand { font-family: 'Rajdhani'; font-size: 2rem; font-weight: 900; letter-spacing: 2px; }
-        .brand span { color: var(--primary); }
-
-        /* --- HERO --- */
-        .hero { padding: 80px 0; text-align: center; }
-        .hero h1 {
-            font-size: 3.5rem; line-height: 1.1; margin-bottom: 20px; text-transform: uppercase;
-            background: linear-gradient(to right, #fff, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .hero p { color: var(--text-muted); max-width: 800px; margin: 0 auto 40px; font-size: 1.1rem; }
-
-        /* --- TOKENOMICS --- */
-        .token-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 60px;
-        }
-        .token-card {
-            background: var(--bg-panel); border: 1px solid #333; padding: 25px; border-radius: 12px; text-align: center;
-        }
-        .token-val { font-size: 2rem; font-weight: bold; color: var(--primary); font-family: 'Rajdhani'; }
-
-        /* --- ROADMAP --- */
-        .roadmap-container {
-            border-left: 2px solid var(--primary); padding-left: 30px; margin: 50px 0;
-        }
-        .phase { margin-bottom: 40px; position: relative; }
-        .phase::before {
-            content: ''; position: absolute; left: -36px; top: 5px; width: 10px; height: 10px;
-            background: var(--bg-deep); border: 2px solid var(--primary); border-radius: 50%;
-        }
-        .phase.done::before { background: var(--primary); }
-        .phase-title { font-size: 1.2rem; font-weight: bold; color: #fff; margin-bottom: 10px; }
-        .phase-list { list-style: none; padding: 0; color: var(--text-muted); }
-        .phase-list li::before { content: '>'; color: var(--primary); margin-right: 8px; }
-
-        /* --- PRESALE BOX --- */
-        .presale-box {
-            background: linear-gradient(135deg, rgba(0,0,0,0.8), rgba(0, 212, 255, 0.05));
-            border: 1px dashed var(--accent); border-radius: 20px; padding: 50px; text-align: center;
-        }
-        .progress-container { width: 100%; height: 10px; background: #222; border-radius: 5px; margin: 20px 0; }
-        .progress-bar { width: 40%; height: 100%; background: var(--accent); border-radius: 5px; }
-
-        /* --- MODAL --- */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 2000;
-        }
-        .modal-box {
-            background: #111; padding: 40px; border-radius: 15px; width: 320px; text-align: center; border: 1px solid #333;
-        }
-        .wallet-choice {
-            display: block; width: 100%; padding: 15px; margin: 10px 0; background: #222;
-            border: 1px solid #444; color: #fff; border-radius: 8px; cursor: pointer; transition: 0.2s;
-        }
-        .wallet-choice:hover { border-color: var(--primary); background: #2a2a2a; }
-
-        /* Responsive */
-        @media (max-width: 768px) { .hero h1 { font-size: 2.2rem; } .nav-content { flex-direction: column; gap: 15px; } }
+        .contract-addr { font-family: monospace; color: #00d2ff; cursor: pointer; }
     </style>
 </head>
 <body>
+    <div class="container">
+        <div class="header">
+            <div class="logo"><i class="fa-solid fa-layer-group"></i> SKYAI PILOT</div>
+            <a href="../index.html" class="back-link"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </div>
 
-    <div class="modal-overlay" id="walletModal">
-        <div class="modal-box">
-            <h3>Connect Wallet</h3>
-            <p style="color:#666; font-size:0.9rem;">Select your secure connection</p>
-            <button class="wallet-choice" onclick="connectBNB()">
-                <i class="fa-brands fa-ethereum" style="color:#F6851B"></i> MetaMask / Trust (BNB)
-            </button>
-            <button class="wallet-choice" onclick="connectSolana()">
-                <i class="fa-solid fa-ghost" style="color:#14f195"></i> Phantom (Solana)
-            </button>
-            <button onclick="document.getElementById('walletModal').style.display='none'" style="background:none; border:none; color:#666; margin-top:10px;">Close</button>
+        <p style="color:#888;">Logged in as: <span id="userAddr" style="color:#fff; font-family:monospace;">...</span></p>
+
+        <div class="grid">
+            <div class="card" id="statusCard">
+                <h3>Membership Tier</h3>
+                <div class="value" id="status">Checking...</div>
+                <div class="sub">Requires 5,000 SKY</div>
+            </div>
+
+            <div class="card">
+                <h3>Token Balance</h3>
+                <div class="value" id="skyBal">0.00</div>
+                <div class="sub" onclick="copyContract()">Contract: <span class="contract-addr">0xcBba...fa83</span></div>
+            </div>
+            
+            <div class="card">
+                <h3>Native Balance</h3>
+                <div class="value" id="nativeBal">0.00</div>
+                <div class="sub" id="chainLabel">BNB/SOL</div>
+            </div>
+        </div>
+
+        <div class="rocket-box">
+            <h2 style="margin-top:0;">🚀 Support the Developer</h2>
+            <p style="color:#aaa;">Direct donation to Founder. Funds development.</p>
+            <p id="donateStatus" style="font-weight:bold; color:#00d2ff;">Ready</p>
+            
+            <button class="rocket-btn" onclick="donate()">🚀</button>
+            <p style="font-size:0.8rem; color:#666;">(Sends 0.02 BNB or 0.1 SOL)</p>
         </div>
     </div>
 
-    <nav>
-        <div class="container nav-content">
-            <div class="brand">SKY<span>AI</span></div>
-            <button id="mainConnectBtn" class="btn btn-outline" onclick="openModal()">
-                <i class="fa-solid fa-wallet"></i> Connect
-            </button>
-        </div>
-    </nav>
-
-    <section class="hero">
-        <div class="container">
-            <h1>"The Sky is not the limit,<br>it's just the beginning."</h1>
-            <p>A decentralized hub for AI Trading, Governance, and Financial Freedom. The ecosystem is live.</p>
-            <div style="display:flex; justify-content:center; gap:20px; flex-wrap:wrap;">
-                <a href="#presale" class="btn btn-glow">Join Presale</a>
-                <a href="#roadmap" class="btn btn-outline">View Roadmap</a>
-            </div>
-        </div>
-    </section>
-
-    <section class="container">
-        <h2 style="text-align:center; margin-bottom:40px;">💎 Tokenomics: 100M Supply</h2>
-        <div class="token-grid">
-            <div class="token-card">
-                <div class="token-val">40%</div>
-                <div style="color:var(--text-muted)">Presale Allocation</div>
-            </div>
-            <div class="token-card">
-                <div class="token-val">20%</div>
-                <div style="color:var(--text-muted)">Liquidity Pool</div>
-            </div>
-            <div class="token-card">
-                <div class="token-val">15%</div>
-                <div style="color:var(--text-muted)">Staking Rewards</div>
-            </div>
-            <div class="token-card">
-                <div class="token-val">25%</div>
-                <div style="color:var(--text-muted)">Dev & Marketing</div>
-            </div>
-        </div>
-    </section>
-
-    <section class="container" id="roadmap">
-        <h2 style="text-align:center;">🗺 SkyAI Project Roadmap</h2>
-        <div class="roadmap-container">
-            <div class="phase done">
-                <div class="phase-title">✅ PHASE 1: Genesis (Q4 2024) - COMPLETED</div>
-                <ul class="phase-list">
-                    <li>SkyAI Concept: Fusion of AI & Crypto</li>
-                    <li>Bot Prototypes: Local SkyAI00bot creation</li>
-                    <li>Community Building: Telegram Channel Launch</li>
-                    <li>Website V1: GitHub Pages Deployment</li>
-                </ul>
-            </div>
-            <div class="phase done" style="border-left: 3px solid var(--primary);">
-                <div class="phase-title" style="color:var(--primary)">🚀 PHASE 2: Server & Web3 (CURRENT - Q1 2025)</div>
-                <ul class="phase-list">
-                    <li>Server Deployment: PythonAnywhere Cloud Migration</li>
-                    <li>Multi-Bot System: Payment, Manager, Brain modules split</li>
-                    <li>Database Migration: TXT to SQLite Security Upgrade</li>
-                    <li>Web3 Integration: BSC Connection & Wallet Reading</li>
-                    <li>Auto-Signal Engine: Fully automated brain.py logic</li>
-                </ul>
-            </div>
-            <div class="phase">
-                <div class="phase-title">🛠 PHASE 3: Automation & Refinement (Q2 2025)</div>
-                <ul class="phase-list">
-                    <li>Smart Contract Verification: Full Sync on Web & Bots</li>
-                    <li>Auto-Presale: Instant Token Distribution</li>
-                    <li>VIP Group Link: Auto-generate invite for 5000+ SKY Holders</li>
-                    <li>Marketing Campaign: Ads for V3.0 System</li>
-                </ul>
-            </div>
-            <div class="phase">
-                <div class="phase-title">🔮 PHASE 4: Expansion (2025+)</div>
-                <ul class="phase-list">
-                    <li>Solana Integration: Multi-chain Expansion</li>
-                    <li>AI Model Upgrade: TensorFlow Machine Learning</li>
-                    <li>Mobile App: Dedicated iOS/Android App</li>
-                    <li>DAO Governance: Voting rights for SKY Holders</li>
-                </ul>
-            </div>
-        </div>
-    </section>
-
-    <section class="container" id="presale">
-        <div class="presale-box">
-            <h2 style="margin-bottom:10px; color:var(--accent);">🚀 $SKY PRE-SALE LIVE</h2>
-            <p>Phase 2 Pricing: 1 BNB = 10,000 SKY</p>
-            
-            <div class="progress-container">
-                <div class="progress-bar"></div>
-            </div>
-            <p style="font-size:0.9rem; color:#888;">Soft Cap: 500 BNB | Target: 2000 BNB</p>
-
-            <div style="background:#000; padding:15px; border-radius:8px; margin:20px auto; max-width:500px; word-break:break-all;">
-                <code id="ownerBNB" style="color:var(--primary); cursor:pointer;" onclick="copyAddress()">0xc98415672A80a26bEC29427b7284D65B73c5Ff7B</code>
-            </div>
-            
-            <button class="btn btn-glow" onclick="buyTokenBNB()">
-                Buy with BNB (MetaMask/Trust)
-            </button>
-            <p style="font-size:0.8rem; margin-top:10px; color:#666;">*Please use BSC Network Only</p>
-        </div>
-    </section>
-
-    <section class="container" style="padding:60px 0; border-top:1px solid #222;">
-        <div style="display:flex; align-items:center; gap:30px; justify-content:center; flex-wrap:wrap;">
-            <img src="cv.jpg" alt="Founder" style="width:150px; height:150px; border-radius:50%; border:3px solid var(--primary); object-fit:cover;" onerror="this.style.display='none'">
-            <div>
-                <h3>Architected by Veres Barnabás</h3>
-                <p style="color:var(--text-muted);">Founder & Lead Developer. Bridging human intuition with machine precision.</p>
-                <div style="margin-top:10px;">
-                    <a href="mailto:veres.barnabas97@gmail.com" style="color:#fff; border-bottom:1px dotted var(--primary);">veres.barnabas97@gmail.com</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <footer style="text-align:center; padding:40px; color:#444; font-size:0.9rem;">
-        &copy; 2025 SkyAI Protocol. All Rights Reserved.<br>
-        Contract: 0xcBbaDC40Cde0F12679a6b0b74fB732E02E60fa83
-    </footer>
-
     <script>
-        // --- CONFIG ---
+        // CONFIG
         const OWNER_BNB = "0xc98415672A80a26bEC29427b7284D65B73c5Ff7B";
-        
-        // --- UI ---
-        function openModal() { document.getElementById('walletModal').style.display = 'flex'; }
-        
-        // --- 1. BNB CONNECTION (MetaMask / Trust) ---
-        async function connectBNB() {
-            document.getElementById('walletModal').style.display = 'none';
-            if (typeof window.ethereum === 'undefined') {
-                alert("No crypto wallet found. Please install MetaMask or TrustWallet.");
-                return;
-            }
-            try {
-                // Request Access
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-                const provider = new ethers.providers.Web3Provider(window.ethereum);
-                const signer = provider.getSigner();
-                const address = await signer.getAddress();
-                
-                // Force BSC Chain (56)
-                const { chainId } = await provider.getNetwork();
-                if (chainId !== 56) {
-                    try {
-                        await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x38' }] });
-                    } catch(e) { console.log("Switch ignored", e); }
-                }
+        const OWNER_SOL = "4iubzdpP14Mo32iRseD7nZEhP1RVLWjjwbsh228uBk3z";
+        const TOKEN = "0xcBbaDC40Cde0F12679a6b0b74fB732E02E60fa83";
+        const TOKEN_ABI = ["function balanceOf(address) view returns (uint256)"];
 
-                // Bridge to Profile
-                localStorage.setItem('skyai_wallet', address);
-                localStorage.setItem('skyai_chain', 'BNB');
-                
-                const btn = document.getElementById('mainConnectBtn');
-                btn.innerHTML = 'Dashboard ➔';
-                btn.classList.add('btn-glow');
-                btn.onclick = () => window.location.href = "Profile/index.html";
-                
-            } catch(e) { alert("Connection Error: " + e.message); }
-        }
+        // STATE
+        let userAddr, chain;
 
-        // --- 2. SOLANA CONNECTION (Phantom) ---
-        async function connectSolana() {
-            document.getElementById('walletModal').style.display = 'none';
-            if (!window.solana || !window.solana.isPhantom) {
-                alert("Phantom Wallet not installed!");
-                window.open("https://phantom.app/", "_blank");
-                return;
-            }
-            try {
-                const resp = await window.solana.connect();
-                
-                // Bridge to Profile
-                localStorage.setItem('skyai_wallet', resp.publicKey.toString());
-                localStorage.setItem('skyai_chain', 'SOLANA');
-                
-                const btn = document.getElementById('mainConnectBtn');
-                btn.innerHTML = 'Dashboard ➔';
-                btn.classList.add('btn-glow');
-                btn.onclick = () => window.location.href = "Profile/index.html";
+        window.onload = async () => {
+            userAddr = localStorage.getItem('skyai_wallet');
+            chain = localStorage.getItem('skyai_chain');
 
-            } catch(e) { console.error(e); }
-        }
-
-        // --- BUY LOGIC ---
-        async function buyTokenBNB() {
-            // Check if connected
-            if (!localStorage.getItem('skyai_chain') === 'BNB') {
-                alert("Please Connect BNB Wallet first!");
-                return;
-            }
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            const signer = provider.getSigner();
+            if(!userAddr) { window.location.href = "../index.html"; return; }
             
-            const amount = prompt("Enter BNB Amount (e.g. 0.5):");
-            if (!amount || isNaN(amount)) return;
+            document.getElementById('userAddr').innerText = userAddr;
+            document.getElementById('chainLabel').innerText = chain + " Chain";
 
-            try {
-                const tx = await signer.sendTransaction({
-                    to: OWNER_BNB,
-                    value: ethers.utils.parseEther(amount)
-                });
-                alert("Transaction Sent! TX: " + tx.hash);
-                window.open(`https://t.me/SkyAI_PaymentBot?start=TX_${tx.hash}`, '_blank');
-            } catch(e) { alert("Transaction Cancelled"); }
+            if (chain === 'BNB') await loadBNB();
+            else if (chain === 'SOLANA') await loadSolana();
         }
 
-        function copyAddress() {
-            navigator.clipboard.writeText(OWNER_BNB);
-            alert("Wallet Copied!");
+        // --- BNB DATA ---
+        async function loadBNB() {
+            const provider = new ethers.providers.JsonRpcProvider("https://bsc-dataseed.binance.org/");
+            
+            // Native Bal
+            const bal = await provider.getBalance(userAddr);
+            document.getElementById('nativeBal').innerText = parseFloat(ethers.utils.formatEther(bal)).toFixed(4);
+
+            // Token Bal
+            const contract = new ethers.Contract(TOKEN, TOKEN_ABI, provider);
+            const tBal = await contract.balanceOf(userAddr);
+            const fmtTBal = parseFloat(ethers.utils.formatEther(tBal));
+            document.getElementById('skyBal').innerText = fmtTBal.toLocaleString();
+
+            if(fmtTBal >= 5000) activateVIP();
+            else document.getElementById('status').innerText = "Free Pilot";
+        }
+
+        // --- SOLANA DATA (Mock for now as public RPCs are tricky for tokens without API key) ---
+        async function loadSolana() {
+            document.getElementById('skyBal').innerText = "BSC Only"; 
+            document.getElementById('status').innerText = "Solana Guest";
+            
+            // Try to get SOL balance via public RPC
+            try {
+                const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
+                const pubKey = new solanaWeb3.PublicKey(userAddr);
+                const bal = await connection.getBalance(pubKey);
+                document.getElementById('nativeBal').innerText = (bal / 1000000000).toFixed(4);
+            } catch(e) { console.log(e); }
+        }
+
+        function activateVIP() {
+            const el = document.getElementById('status');
+            el.innerText = "★ VIP COMMANDER";
+            el.classList.add('vip-text');
+            document.getElementById('statusCard').classList.add('vip-active');
+        }
+
+        // --- DONATION LOGIC ---
+        async function donate() {
+            const status = document.getElementById('donateStatus');
+            status.innerText = "Initiating Launch...";
+
+            try {
+                if (chain === 'BNB') {
+                    // MetaMask / Trust
+                    const provider = new ethers.providers.Web3Provider(window.ethereum);
+                    const signer = provider.getSigner();
+                    const tx = await signer.sendTransaction({
+                        to: OWNER_BNB,
+                        value: ethers.utils.parseEther("0.02")
+                    });
+                    status.innerText = "BNB Sent! 🚀";
+                    await tx.wait();
+                    alert("Support Received! Thank you!");
+                } 
+                else if (chain === 'SOLANA') {
+                    // Phantom
+                    const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
+                    const transaction = new solanaWeb3.Transaction().add(
+                        solanaWeb3.SystemProgram.transfer({
+                            fromPubkey: window.solana.publicKey,
+                            toPubkey: new solanaWeb3.PublicKey(OWNER_SOL),
+                            lamports: 0.1 * 1000000000, 
+                        })
+                    );
+                    const { blockhash } = await connection.getLatestBlockhash();
+                    transaction.recentBlockhash = blockhash;
+                    transaction.feePayer = window.solana.publicKey;
+                    
+                    const { signature } = await window.solana.signAndSendTransaction(transaction);
+                    status.innerText = "SOL Sent! 🚀";
+                    await connection.confirmTransaction(signature);
+                    alert("Support Received! Thank you!");
+                }
+            } catch (e) {
+                status.innerText = "Launch Aborted.";
+                console.error(e);
+            }
+        }
+
+        function copyContract() {
+            navigator.clipboard.writeText(TOKEN);
+            alert("Contract Copied!");
         }
     </script>
 </body>
