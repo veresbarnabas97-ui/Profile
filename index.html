@@ -3,422 +3,340 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Veres Barnabás | SkyAI Founder Profile</title>
+    <title>SkyAI | Web3 Business Ecosystem</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
     <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
 
     <style>
-        /* ================================================= */
-        /* STÍLUSOK (CSS) - SKYAI DARK THEME */
-        /* ================================================= */
         :root {
-            --primary-text: #f0f0f0;
-            --muted-text: #aaaaaa;
-            --accent-color: #00d4ff;      /* SkyAI Blue */
-            --solana-color: #14f195;      /* Solana Green */
-            --bg-color: #050505;
-            --card-bg: #111111;
-            --font-main: 'Roboto', sans-serif;
-            --container-width: 1000px;
+            --bg-deep: #020205;
+            --bg-panel: #0b0b10;
+            --primary: #00d2ff;     /* SkyAI Cyan */
+            --secondary: #0078ff;   /* Deep Blue */
+            --solana: #14f195;      /* Solana Green */
+            --accent: #d4af37;      /* Gold */
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --container-width: 1200px;
         }
 
+        /* --- GLOBAL RESET --- */
         body {
-            font-family: var(--font-main);
-            margin: 0; padding: 0;
-            background-color: var(--bg-color);
-            color: var(--primary-text);
-            line-height: 1.6;
-            overflow-x: hidden;
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-family: 'Exo 2', sans-serif;
+            margin: 0; padding: 0; overflow-x: hidden;
+            background-image: radial-gradient(circle at 50% 10%, rgba(0, 210, 255, 0.05) 0%, transparent 40%);
         }
+        
+        .container { max-width: var(--container-width); margin: 0 auto; padding: 0 20px; }
+        a { text-decoration: none; color: inherit; }
 
-        /* Háttér effekt */
-        body::before {
-            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(0, 212, 255, 0.08) 0%, transparent 20%),
-                radial-gradient(circle at 90% 80%, rgba(20, 241, 149, 0.08) 0%, transparent 20%);
-            z-index: -1; pointer-events: none;
+        /* --- BUTTONS --- */
+        .btn {
+            padding: 12px 28px; border-radius: 4px; font-family: 'Rajdhani', sans-serif;
+            font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+            cursor: pointer; display: inline-flex; align-items: center; gap: 10px;
+            border: none; transition: 0.3s;
         }
-
-        .container { width: 90%; max-width: var(--container-width); margin: 0 auto; position: relative; }
-
-        /* --- FEJLÉC & WEB3 --- */
-        header {
-            padding: 30px 0; background: rgba(0,0,0,0.8);
-            border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 100;
-            backdrop-filter: blur(10px);
+        .btn-glow {
+            background: linear-gradient(90deg, var(--secondary), var(--primary)); color: #000;
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
         }
-        .header-content { display: flex; justify-content: space-between; align-items: center; }
-        header h1 { margin: 0; font-size: 1.8rem; color: var(--accent-color); text-transform: uppercase; letter-spacing: 2px; }
-
-        .btn-connect {
-            background: linear-gradient(90deg, var(--accent-color), var(--solana-color));
-            color: #000; border: none; padding: 10px 25px; border-radius: 30px;
-            font-weight: bold; cursor: pointer; transition: all 0.3s;
-            box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+        .btn-glow:hover { transform: translateY(-2px); box-shadow: 0 0 40px rgba(0, 210, 255, 0.6); color: #fff; }
+        .btn-outline {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--primary); color: var(--primary);
         }
-        .btn-connect:hover { transform: scale(1.05); filter: brightness(1.2); }
-
-        /* Navigáció */
-        nav { text-align: center; margin-top: 20px; }
-        nav a {
-            color: var(--primary-text); text-decoration: none; margin: 0 15px;
-            font-size: 0.9rem; text-transform: uppercase; transition: color 0.3s;
+        .btn-solana {
+            background: rgba(20, 241, 149, 0.1); border: 1px solid var(--solana); color: var(--solana);
         }
-        nav a:hover { color: var(--accent-color); }
+        .btn-solana:hover { background: var(--solana); color: #000; }
 
-        /* --- SZEKCIÓK --- */
-        section { padding: 60px 0; border-bottom: 1px solid #222; }
-        h2 {
-            color: var(--accent-color); text-transform: uppercase;
-            border-left: 4px solid var(--accent-color); padding-left: 15px; margin-bottom: 30px;
+        /* --- HEADER --- */
+        nav {
+            padding: 20px 0; background: rgba(2, 2, 5, 0.95);
+            border-bottom: 1px solid rgba(255,255,255,0.1); position: sticky; top: 0; z-index: 1000;
         }
+        .nav-content { display: flex; justify-content: space-between; align-items: center; }
+        .brand { font-family: 'Rajdhani'; font-size: 2rem; font-weight: 900; letter-spacing: 2px; }
+        .brand span { color: var(--primary); }
 
-        /* --- ÖNÉLETRAJZ KÉP --- */
-        .resume-container { text-align: center; margin-bottom: 20px; }
-        .resume-container img {
-            max-width: 100%; width: 250px; border-radius: 50%;
-            border: 3px solid var(--accent-color); box-shadow: 0 0 30px rgba(0, 234, 255, 0.2);
+        /* --- HERO --- */
+        .hero { padding: 80px 0; text-align: center; }
+        .hero h1 {
+            font-size: 3.5rem; line-height: 1.1; margin-bottom: 20px; text-transform: uppercase;
+            background: linear-gradient(to right, #fff, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
+        .hero p { color: var(--text-muted); max-width: 800px; margin: 0 auto 40px; font-size: 1.1rem; }
+
+        /* --- TOKENOMICS --- */
+        .token-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 60px;
+        }
+        .token-card {
+            background: var(--bg-panel); border: 1px solid #333; padding: 25px; border-radius: 12px; text-align: center;
+        }
+        .token-val { font-size: 2rem; font-weight: bold; color: var(--primary); font-family: 'Rajdhani'; }
 
         /* --- ROADMAP --- */
-        .roadmap-list { list-style: none; padding: 0; }
-        .roadmap-list li {
-            background: rgba(255,255,255,0.03); margin-bottom: 10px; padding: 15px;
-            border-radius: 8px; border-left: 3px solid #333;
+        .roadmap-container {
+            border-left: 2px solid var(--primary); padding-left: 30px; margin: 50px 0;
         }
-        .roadmap-list li.active { border-left-color: var(--accent-color); background: rgba(0, 212, 255, 0.05); }
-        .roadmap-date { font-weight: bold; color: var(--accent-color); display: block; margin-bottom: 5px; }
+        .phase { margin-bottom: 40px; position: relative; }
+        .phase::before {
+            content: ''; position: absolute; left: -36px; top: 5px; width: 10px; height: 10px;
+            background: var(--bg-deep); border: 2px solid var(--primary); border-radius: 50%;
+        }
+        .phase.done::before { background: var(--primary); }
+        .phase-title { font-size: 1.2rem; font-weight: bold; color: #fff; margin-bottom: 10px; }
+        .phase-list { list-style: none; padding: 0; color: var(--text-muted); }
+        .phase-list li::before { content: '>'; color: var(--primary); margin-right: 8px; }
 
         /* --- PRESALE BOX --- */
         .presale-box {
-            background: linear-gradient(135deg, rgba(0,0,0,0.6), rgba(0, 212, 255, 0.1));
-            border: 1px dashed var(--accent-color); border-radius: 15px; padding: 30px;
-            text-align: center; margin-top: 30px;
+            background: linear-gradient(135deg, rgba(0,0,0,0.8), rgba(0, 212, 255, 0.05));
+            border: 1px dashed var(--accent); border-radius: 20px; padding: 50px; text-align: center;
         }
-        .btn-buy {
-            background: var(--accent-color); color: #000; padding: 12px 30px;
-            border: none; border-radius: 5px; font-weight: bold; cursor: pointer;
-            margin-top: 15px; font-size: 1rem; transition: 0.3s;
-        }
-        .btn-buy:hover { box-shadow: 0 0 20px var(--accent-color); }
+        .progress-container { width: 100%; height: 10px; background: #222; border-radius: 5px; margin: 20px 0; }
+        .progress-bar { width: 40%; height: 100%; background: var(--accent); border-radius: 5px; }
 
-        /* --- ROCKET SECTION (SUPPORT) --- */
-        .rocket-section {
-            text-align: center; padding: 40px; border: 2px dashed #333;
-            border-radius: 20px; background: linear-gradient(180deg, rgba(20, 241, 149, 0.03) 0%, rgba(0, 212, 255, 0.03) 100%);
-            margin-top: 50px;
-        }
-        .rocket-btn {
-            font-size: 4em; background: none; border: none; cursor: pointer;
-            transition: transform 0.4s; display: block; margin: 10px auto;
-        }
-        .rocket-btn:hover { transform: scale(1.2) rotate(-10deg); text-shadow: 0 0 20px #fff; }
-        .rocket-btn:disabled { opacity: 0.3; cursor: not-allowed; filter: grayscale(1); }
-
-        /* --- CHART GRID --- */
-        .charts-wrapper { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
-        .chart-box {
-            flex: 1; min-width: 300px; height: 350px; background: #111;
-            border-radius: 8px; border: 1px solid #333; overflow: hidden;
-        }
-
-        /* --- MODAL (Tárcaválasztó) --- */
+        /* --- MODAL --- */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); display: none;
-            justify-content: center; align-items: center; z-index: 1000;
-            backdrop-filter: blur(5px);
+            background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 2000;
         }
-        .modal-content {
-            background: #1a1a1a; padding: 30px; border-radius: 20px;
-            width: 300px; text-align: center; border: 1px solid #444;
-            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+        .modal-box {
+            background: #111; padding: 40px; border-radius: 15px; width: 320px; text-align: center; border: 1px solid #333;
         }
-        .wallet-option {
-            display: flex; align-items: center; justify-content: center; width: 100%;
-            padding: 15px; margin: 10px 0; border: 1px solid #444;
-            border-radius: 10px; background: #222; color: #fff; cursor: pointer;
-            transition: 0.2s; font-weight: bold;
+        .wallet-choice {
+            display: block; width: 100%; padding: 15px; margin: 10px 0; background: #222;
+            border: 1px solid #444; color: #fff; border-radius: 8px; cursor: pointer; transition: 0.2s;
         }
-        .wallet-option:hover { background: #333; border-color: #fff; }
-        .wallet-option.bnb:hover { border-color: var(--accent-color); }
-        .wallet-option.sol:hover { border-color: var(--solana-color); }
+        .wallet-choice:hover { border-color: var(--primary); background: #2a2a2a; }
 
-        /* Grid */
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
-        ul.styled-list { list-style: none; padding: 0; }
-        ul.styled-list li { margin-bottom: 12px; padding-left: 20px; position: relative; }
-        ul.styled-list li::before { content: '•'; color: var(--accent-color); position: absolute; left: 0; }
-        .highlight { color: var(--accent-color); font-weight: bold; }
-        a.link { color: inherit; text-decoration: none; border-bottom: 1px dotted var(--accent-color); }
-
-        @media (max-width: 768px) {
-            .grid-2 { grid-template-columns: 1fr; }
-            .header-content { flex-direction: column; gap: 15px; }
-        }
+        /* Responsive */
+        @media (max-width: 768px) { .hero h1 { font-size: 2.2rem; } .nav-content { flex-direction: column; gap: 15px; } }
     </style>
 </head>
 <body>
 
     <div class="modal-overlay" id="walletModal">
-        <div class="modal-content">
-            <h3 style="margin-top:0;">Select Network</h3>
-            <button class="wallet-option bnb" onclick="selectWallet('BNB')">
-                🔵 BNB Chain (MetaMask/Trust)
+        <div class="modal-box">
+            <h3>Connect Wallet</h3>
+            <p style="color:#666; font-size:0.9rem;">Select your secure connection</p>
+            <button class="wallet-choice" onclick="connectBNB()">
+                <i class="fa-brands fa-ethereum" style="color:#F6851B"></i> MetaMask / Trust (BNB)
             </button>
-            <button class="wallet-option sol" onclick="selectWallet('SOLANA')">
-                🟢 Solana (Phantom)
+            <button class="wallet-choice" onclick="connectSolana()">
+                <i class="fa-solid fa-ghost" style="color:#14f195"></i> Phantom (Solana)
             </button>
-            <button onclick="closeModal()" style="background:none; border:none; color:#666; margin-top:10px; cursor:pointer;">Cancel</button>
+            <button onclick="document.getElementById('walletModal').style.display='none'" style="background:none; border:none; color:#666; margin-top:10px;">Close</button>
         </div>
     </div>
 
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <div>
-                    <h1>VERES BARNABÁS</h1>
-                    <p style="margin:0; color:#888;">Web3 Visionary & SkyAI Founder</p>
-                </div>
-                <button id="connectBtn" class="btn-connect" onclick="openModal()">Connect Wallet</button>
-            </div>
-            <nav>
-                <a href="#resume">About</a>
-                <a href="#skyai">SkyAI & Roadmap</a>
-                <a href="#charts">Markets</a>
-                <a href="#contact">Contact</a>
-            </nav>
+    <nav>
+        <div class="container nav-content">
+            <div class="brand">SKY<span>AI</span></div>
+            <button id="mainConnectBtn" class="btn btn-outline" onclick="openModal()">
+                <i class="fa-solid fa-wallet"></i> Connect
+            </button>
         </div>
-    </header>
+    </nav>
 
-    <section id="resume">
+    <section class="hero">
         <div class="container">
-            <div class="resume-container">
-                <img src="../cv.jpg" alt="Veres Barnabás" onerror="this.src='cv.jpg'">
+            <h1>"The Sky is not the limit,<br>it's just the beginning."</h1>
+            <p>A decentralized hub for AI Trading, Governance, and Financial Freedom. The ecosystem is live.</p>
+            <div style="display:flex; justify-content:center; gap:20px; flex-wrap:wrap;">
+                <a href="#presale" class="btn btn-glow">Join Presale</a>
+                <a href="#roadmap" class="btn btn-outline">View Roadmap</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="container">
+        <h2 style="text-align:center; margin-bottom:40px;">💎 Tokenomics: 100M Supply</h2>
+        <div class="token-grid">
+            <div class="token-card">
+                <div class="token-val">40%</div>
+                <div style="color:var(--text-muted)">Presale Allocation</div>
+            </div>
+            <div class="token-card">
+                <div class="token-val">20%</div>
+                <div style="color:var(--text-muted)">Liquidity Pool</div>
+            </div>
+            <div class="token-card">
+                <div class="token-val">15%</div>
+                <div style="color:var(--text-muted)">Staking Rewards</div>
+            </div>
+            <div class="token-card">
+                <div class="token-val">25%</div>
+                <div style="color:var(--text-muted)">Dev & Marketing</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="container" id="roadmap">
+        <h2 style="text-align:center;">🗺 SkyAI Project Roadmap</h2>
+        <div class="roadmap-container">
+            <div class="phase done">
+                <div class="phase-title">✅ PHASE 1: Genesis (Q4 2024) - COMPLETED</div>
+                <ul class="phase-list">
+                    <li>SkyAI Concept: Fusion of AI & Crypto</li>
+                    <li>Bot Prototypes: Local SkyAI00bot creation</li>
+                    <li>Community Building: Telegram Channel Launch</li>
+                    <li>Website V1: GitHub Pages Deployment</li>
+                </ul>
+            </div>
+            <div class="phase done" style="border-left: 3px solid var(--primary);">
+                <div class="phase-title" style="color:var(--primary)">🚀 PHASE 2: Server & Web3 (CURRENT - Q1 2025)</div>
+                <ul class="phase-list">
+                    <li>Server Deployment: PythonAnywhere Cloud Migration</li>
+                    <li>Multi-Bot System: Payment, Manager, Brain modules split</li>
+                    <li>Database Migration: TXT to SQLite Security Upgrade</li>
+                    <li>Web3 Integration: BSC Connection & Wallet Reading</li>
+                    <li>Auto-Signal Engine: Fully automated brain.py logic</li>
+                </ul>
+            </div>
+            <div class="phase">
+                <div class="phase-title">🛠 PHASE 3: Automation & Refinement (Q2 2025)</div>
+                <ul class="phase-list">
+                    <li>Smart Contract Verification: Full Sync on Web & Bots</li>
+                    <li>Auto-Presale: Instant Token Distribution</li>
+                    <li>VIP Group Link: Auto-generate invite for 5000+ SKY Holders</li>
+                    <li>Marketing Campaign: Ads for V3.0 System</li>
+                </ul>
+            </div>
+            <div class="phase">
+                <div class="phase-title">🔮 PHASE 4: Expansion (2025+)</div>
+                <ul class="phase-list">
+                    <li>Solana Integration: Multi-chain Expansion</li>
+                    <li>AI Model Upgrade: TensorFlow Machine Learning</li>
+                    <li>Mobile App: Dedicated iOS/Android App</li>
+                    <li>DAO Governance: Voting rights for SKY Holders</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="container" id="presale">
+        <div class="presale-box">
+            <h2 style="margin-bottom:10px; color:var(--accent);">🚀 $SKY PRE-SALE LIVE</h2>
+            <p>Phase 2 Pricing: 1 BNB = 10,000 SKY</p>
+            
+            <div class="progress-container">
+                <div class="progress-bar"></div>
+            </div>
+            <p style="font-size:0.9rem; color:#888;">Soft Cap: 500 BNB | Target: 2000 BNB</p>
+
+            <div style="background:#000; padding:15px; border-radius:8px; margin:20px auto; max-width:500px; word-break:break-all;">
+                <code id="ownerBNB" style="color:var(--primary); cursor:pointer;" onclick="copyAddress()">0xc98415672A80a26bEC29427b7284D65B73c5Ff7B</code>
             </div>
             
-            <div class="grid-2">
-                <div>
-                    <h2>👤 Founder Profile</h2>
-                    <p style="font-size:1.1rem; line-height:1.8;">
-                        I am <strong>Veres Barnabás</strong>, a disciplined Web3 developer with over 7 years of high-precision experience, dedicated to bridging the gap between Artificial Intelligence and Blockchain technology. My mission is to build the <strong>SkyAI Ecosystem</strong>, a fully decentralized platform that empowers users through automated intelligence and transparent governance.
-                    </p>
-                </div>
-                <div>
-                    <h2>🎯 The Vision</h2>
-                    <ul class="styled-list">
-                        <li><strong>Identity:</strong> <span class="highlight">veresbarnabas.bnb</span></li>
-                        <li><strong>Core:</strong> AI-Driven Trading & Analytics</li>
-                        <li><strong>Goal:</strong> Financial Freedom for Everyone</li>
-                    </ul>
+            <button class="btn btn-glow" onclick="buyTokenBNB()">
+                Buy with BNB (MetaMask/Trust)
+            </button>
+            <p style="font-size:0.8rem; margin-top:10px; color:#666;">*Please use BSC Network Only</p>
+        </div>
+    </section>
+
+    <section class="container" style="padding:60px 0; border-top:1px solid #222;">
+        <div style="display:flex; align-items:center; gap:30px; justify-content:center; flex-wrap:wrap;">
+            <img src="cv.jpg" alt="Founder" style="width:150px; height:150px; border-radius:50%; border:3px solid var(--primary); object-fit:cover;" onerror="this.style.display='none'">
+            <div>
+                <h3>Architected by Veres Barnabás</h3>
+                <p style="color:var(--text-muted);">Founder & Lead Developer. Bridging human intuition with machine precision.</p>
+                <div style="margin-top:10px;">
+                    <a href="mailto:veres.barnabas97@gmail.com" style="color:#fff; border-bottom:1px dotted var(--primary);">veres.barnabas97@gmail.com</a>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="skyai">
-        <div class="container">
-            <div class="grid-2">
-                <div>
-                    <h2>🗺️ Project Roadmap</h2>
-                    <ul class="roadmap-list">
-                        <li>
-                            <span class="roadmap-date">Q4 2024</span>
-                            Concept Creation & Brain v1.0 Development
-                        </li>
-                        <li class="active">
-                            <span class="roadmap-date">Q1 2025 (Current)</span>
-                            <strong>SKY Token Presale</strong> & Website Launch
-                        </li>
-                        <li>
-                            <span class="roadmap-date">Q2 2025</span>
-                            AI Signal Bot Integration & Staking
-                        </li>
-                        <li>
-                            <span class="roadmap-date">Q3 2025</span>
-                            DAO Governance & Mobile App Beta
-                        </li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h2>💎 Sky Token Presale</h2>
-                    <p>Be an early investor in the future of AI Trading.</p>
-                    <div class="presale-box">
-                        <h3 style="margin:0; color:#fff;">1 BNB = 10,000 SKY</h3>
-                        <p style="font-size:0.9rem; color:#888;">Listing Price: 1 BNB = 5,000 SKY</p>
-                        
-                        <button class="btn-buy" onclick="buyToken()">
-                            <i class="fa-solid fa-cart-shopping"></i> BUY SKY TOKEN
-                        </button>
-                        <p style="font-size:0.8rem; margin-top:10px; color:#666;">(Only via BNB Chain)</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="rocket-section">
-                <h3>🚀 Fuel the Mission (Donation)</h3>
-                <p>Support the developer directly. Funds go to development costs.</p>
-                <p style="font-size: 0.9em; color: #888; margin-bottom:20px;">
-                    <span id="statusText">🔴 Wallet Not Connected</span>
-                </p>
-                
-                <button class="rocket-btn" id="rocketBtn" onclick="launchRocket()" disabled>🚀</button>
-                <div id="txStatus" style="margin-top:20px; font-weight:bold; color:var(--accent-color)">Connect wallet to support!</div>
-            </div>
-        </div>
-    </section>
-
-    <section id="charts">
-        <div class="container">
-            <h2>💹 Live Markets</h2>
-            <div class="charts-wrapper">
-                <div class="chart-box">
-                    <div class="tradingview-widget-container" style="height:100%;width:100%">
-                        <div class="tradingview-widget-container__widget" style="height:100%;width:100%"></div>
-                        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js" async>
-                        { "symbols": [["BTC/USDC", "BINANCE:BTCUSDC|1D"]], "width": "100%", "height": "100%", "locale": "en", "colorTheme": "dark", "autosize": true, "showVolume": false, "showMA": false, "hideDateRanges": false, "hideMarketStatus": false, "scalePosition": "right", "scaleMode": "Normal", "fontFamily": "Roboto, sans-serif", "noTimeScale": false, "valuesTracking": "1", "changeMode": "price-and-percent", "chartType": "area", "lineColor": "#F7931A", "bottomColor": "rgba(247, 147, 26, 0.1)", "topColor": "rgba(247, 147, 26, 0.3)" }
-                        </script>
-                    </div>
-                </div>
-                <div class="chart-box">
-                    <div class="tradingview-widget-container" style="height:100%;width:100%">
-                        <div class="tradingview-widget-container__widget" style="height:100%;width:100%"></div>
-                        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js" async>
-                        { "symbols": [["BNB/USDC", "BINANCE:BNBUSDC|1D"]], "width": "100%", "height": "100%", "locale": "en", "colorTheme": "dark", "autosize": true, "showVolume": false, "showMA": false, "hideDateRanges": false, "hideMarketStatus": false, "scalePosition": "right", "scaleMode": "Normal", "fontFamily": "Roboto, sans-serif", "noTimeScale": false, "valuesTracking": "1", "changeMode": "price-and-percent", "chartType": "area", "lineColor": "#F3BA2F", "bottomColor": "rgba(243, 186, 47, 0.1)", "topColor": "rgba(243, 186, 47, 0.3)" }
-                        </script>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="contact">
-        <div class="container">
-            <h2>🔗 Contact</h2>
-            <div class="grid-2">
-                <div>
-                    <ul class="styled-list">
-                        <li><span class="highlight">Phone:</span> <a href="tel:+36705983697" class="link">+36-70/5983697</a></li>
-                        <li><span class="highlight">Email:</span> <a href="mailto:veres.barnabas97@gmail.com" class="link">veres.barnabas97@gmail.com</a></li>
-                        <li><span class="highlight">Location:</span> Hungary, Kunszentmiklós</li>
-                    </ul>
-                </div>
-                <div>
-                    <ul class="styled-list">
-                        <li><span class="highlight">BNB Address:</span> <span style="font-size:0.8rem">0xc984...Ff7B</span></li>
-                        <li><span class="highlight">SOL Address:</span> <span style="font-size:0.8rem">4iub...Bk3z</span></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <footer>
-        <p>&copy; 2025 Veres Barnabás | SkyAI Project | All Rights Reserved.</p>
+    <footer style="text-align:center; padding:40px; color:#444; font-size:0.9rem;">
+        &copy; 2025 SkyAI Protocol. All Rights Reserved.<br>
+        Contract: 0xcBbaDC40Cde0F12679a6b0b74fB732E02E60fa83
     </footer>
 
     <script>
-        // *** HIVATALOS CÍMEK ***
+        // --- CONFIG ---
         const OWNER_BNB = "0xc98415672A80a26bEC29427b7284D65B73c5Ff7B";
-        const OWNER_SOL = "4iubzdpP14Mo32iRseD7nZEhP1RVLWjjwbsh228uBk3z";
         
-        let currentChain = null;
-        let provider = null;
-        let signer = null;
-
-        // UI Elemek
-        const modal = document.getElementById('walletModal');
-        const connectBtn = document.getElementById('connectBtn');
-        const statusText = document.getElementById('statusText');
-        const rocketBtn = document.getElementById('rocketBtn');
-        const txStatus = document.getElementById('txStatus');
-
-        function openModal() { modal.style.display = 'flex'; }
-        function closeModal() { modal.style.display = 'none'; }
-
-        async function selectWallet(chain) {
-            closeModal();
-            txStatus.innerText = "Connecting...";
-            try {
-                if (chain === 'BNB') await connectBNB();
-                else if (chain === 'SOLANA') await connectSolana();
-            } catch (error) {
-                alert("Connection Error: " + error.message);
-            }
-        }
-
-        // --- BNB / BSC LOGIC (MetaMask & TrustWallet) ---
+        // --- UI ---
+        function openModal() { document.getElementById('walletModal').style.display = 'flex'; }
+        
+        // --- 1. BNB CONNECTION (MetaMask / Trust) ---
         async function connectBNB() {
-            if (typeof window.ethereum === 'undefined') { 
-                alert("MetaMask or TrustWallet not found!"); return; 
+            document.getElementById('walletModal').style.display = 'none';
+            if (typeof window.ethereum === 'undefined') {
+                alert("No crypto wallet found. Please install MetaMask or TrustWallet.");
+                return;
             }
             try {
-                // Request Account Access
+                // Request Access
                 await window.ethereum.request({ method: 'eth_requestAccounts' });
-                provider = new ethers.providers.Web3Provider(window.ethereum);
-                signer = provider.getSigner();
+                const provider = new ethers.providers.Web3Provider(window.ethereum);
+                const signer = provider.getSigner();
                 const address = await signer.getAddress();
                 
-                // Force Switch to BSC (Chain ID 56)
-                const network = await provider.getNetwork();
-                if (network.chainId !== 56) {
+                // Force BSC Chain (56)
+                const { chainId } = await provider.getNetwork();
+                if (chainId !== 56) {
                     try {
                         await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x38' }] });
-                    } catch(e) { console.log("Switch Error", e); }
+                    } catch(e) { console.log("Switch ignored", e); }
                 }
 
-                setConnectedState(address, 'BNB');
-            } catch(e) {
-                console.error(e);
-                alert("Failed to connect BNB wallet.");
-            }
+                // Bridge to Profile
+                localStorage.setItem('skyai_wallet', address);
+                localStorage.setItem('skyai_chain', 'BNB');
+                
+                const btn = document.getElementById('mainConnectBtn');
+                btn.innerHTML = 'Dashboard ➔';
+                btn.classList.add('btn-glow');
+                btn.onclick = () => window.location.href = "Profile/index.html";
+                
+            } catch(e) { alert("Connection Error: " + e.message); }
         }
 
-        // --- SOLANA LOGIC (Phantom) ---
+        // --- 2. SOLANA CONNECTION (Phantom) ---
         async function connectSolana() {
-            if (!window.solana || !window.solana.isPhantom) { 
-                alert("Phantom Wallet not installed!"); 
+            document.getElementById('walletModal').style.display = 'none';
+            if (!window.solana || !window.solana.isPhantom) {
+                alert("Phantom Wallet not installed!");
                 window.open("https://phantom.app/", "_blank");
-                return; 
+                return;
             }
             try {
                 const resp = await window.solana.connect();
-                setConnectedState(resp.publicKey.toString(), 'SOLANA');
-            } catch(e) {
-                console.error(e);
-                alert("Failed to connect Solana wallet.");
-            }
+                
+                // Bridge to Profile
+                localStorage.setItem('skyai_wallet', resp.publicKey.toString());
+                localStorage.setItem('skyai_chain', 'SOLANA');
+                
+                const btn = document.getElementById('mainConnectBtn');
+                btn.innerHTML = 'Dashboard ➔';
+                btn.classList.add('btn-glow');
+                btn.onclick = () => window.location.href = "Profile/index.html";
+
+            } catch(e) { console.error(e); }
         }
 
-        // --- ÁLLAPOT KEZELÉS ---
-        function setConnectedState(address, chain) {
-            currentChain = chain;
-            const shortAddr = address.substring(0,6) + "..." + address.substring(address.length-4);
-            connectBtn.innerText = shortAddr;
-            statusText.innerHTML = `🟢 Connected: <strong>${chain}</strong>`;
-            
-            rocketBtn.disabled = false;
-            rocketBtn.style.filter = "none";
-            txStatus.innerText = `Ready to Launch (${chain})!`;
-
-            if(chain === 'BNB') connectBtn.style.background = "var(--accent-color)";
-            else connectBtn.style.background = "var(--solana-color)";
-        }
-
-        // --- PRESALE VÁSÁRLÁS (CSAK BNB) ---
-        async function buyToken() {
-            if (currentChain !== 'BNB' || !signer) {
-                alert("Please connect a BNB Wallet (MetaMask/Trust) to buy SKY Token!");
+        // --- BUY LOGIC ---
+        async function buyTokenBNB() {
+            // Check if connected
+            if (!localStorage.getItem('skyai_chain') === 'BNB') {
+                alert("Please Connect BNB Wallet first!");
                 return;
             }
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = provider.getSigner();
             
-            const amount = prompt("Enter BNB amount to invest (e.g. 0.5):");
+            const amount = prompt("Enter BNB Amount (e.g. 0.5):");
             if (!amount || isNaN(amount)) return;
 
             try {
@@ -426,52 +344,14 @@
                     to: OWNER_BNB,
                     value: ethers.utils.parseEther(amount)
                 });
-                alert("Pre-sale Purchase Sent! TX: " + tx.hash);
-            } catch (err) {
-                alert("Purchase Cancelled.");
-            }
+                alert("Transaction Sent! TX: " + tx.hash);
+                window.open(`https://t.me/SkyAI_PaymentBot?start=TX_${tx.hash}`, '_blank');
+            } catch(e) { alert("Transaction Cancelled"); }
         }
 
-        // --- TÁMOGATÁS (RAKÉTA) - Lánc specifikus ---
-        async function launchRocket() {
-            if (!currentChain) return;
-            txStatus.innerText = "Signing Transaction...";
-
-            try {
-                if (currentChain === 'BNB') {
-                    // BNB Donation
-                    const tx = await signer.sendTransaction({
-                        to: OWNER_BNB,
-                        value: ethers.utils.parseEther("0.01") // Small donation
-                    });
-                    txStatus.innerText = "Sending BNB Support... ⏳";
-                    await tx.wait();
-                    alert("Thank you for the BNB Support! 🚀");
-                } 
-                else if (currentChain === 'SOLANA') {
-                    // Solana Donation
-                    const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
-                    const transaction = new solanaWeb3.Transaction().add(
-                        solanaWeb3.SystemProgram.transfer({
-                            fromPubkey: window.solana.publicKey,
-                            toPubkey: new solanaWeb3.PublicKey(OWNER_SOL),
-                            lamports: 0.05 * 1000000000, // Small donation (approx 0.05 SOL)
-                        })
-                    );
-                    const { blockhash } = await connection.getLatestBlockhash();
-                    transaction.recentBlockhash = blockhash;
-                    transaction.feePayer = window.solana.publicKey;
-                    
-                    const { signature } = await window.solana.signAndSendTransaction(transaction);
-                    txStatus.innerText = "Sending SOL Support... ⏳";
-                    await connection.confirmTransaction(signature);
-                    alert("Thank you for the SOL Support! 🚀");
-                }
-                txStatus.innerText = "LAUNCH SUCCESSFUL! 🚀";
-            } catch (error) {
-                console.error(error);
-                txStatus.innerText = "Transaction Failed or Rejected.";
-            }
+        function copyAddress() {
+            navigator.clipboard.writeText(OWNER_BNB);
+            alert("Wallet Copied!");
         }
     </script>
 </body>
