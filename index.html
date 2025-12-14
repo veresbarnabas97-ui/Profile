@@ -3,482 +3,283 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkyAI | Web3 Trading Ecosystem</title>
+    <title>SkyAI Dashboard | Profil v4.0</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Space+Grotesk:wght@300;400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
-    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
 
     <style>
         :root {
-            --bg-dark: #020203;
-            --card-bg: #0b0b0f;
-            --primary: #00f0ff;    /* Neon Cyan - SkyAI */
-            --secondary: #7000ff;  /* Deep Purple - Web3 */
-            --success: #00ff9d;    /* Profit Green */
-            --gold: #ffd700;       /* VIP/Whale */
-            --text-main: #ffffff;
-            --text-dim: #8b9bb4;
-            --glass: rgba(11, 11, 15, 0.8);
+            --primary-text: #f0f0f0;
+            --accent-color: #00d4ff;      /* SkyAI Blue */
+            --vip-gold: #ffd700;          /* VIP Gold */
+            --bg-color: #050505;
+            --card-bg: rgba(20, 20, 20, 0.7);
+            --sidebar-bg: rgba(10, 10, 10, 0.95);
+            --font-main: 'Roboto', sans-serif;
         }
 
         body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            font-family: 'Space Grotesk', sans-serif;
-            margin: 0;
+            font-family: var(--font-main);
+            margin: 0; padding: 0;
+            background-color: var(--bg-color);
+            color: var(--primary-text);
+            min-height: 100vh;
             overflow-x: hidden;
+        }
+
+        /* Mátrix/Cyber háttér */
+        body::after {
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-image: 
-                radial-gradient(circle at 10% 10%, rgba(112, 0, 255, 0.1) 0%, transparent 40%),
-                radial-gradient(circle at 90% 90%, rgba(0, 240, 255, 0.1) 0%, transparent 40%);
+                linear-gradient(rgba(0, 212, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 255, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: -2; pointer-events: none;
         }
 
-        /* --- UI ELEMENTS --- */
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .dashboard-container { display: flex; min-height: 100vh; }
 
-        .btn-glow {
-            background: linear-gradient(45deg, var(--secondary), var(--primary));
-            border: none;
-            color: #fff;
-            padding: 12px 25px;
-            border-radius: 50px;
-            font-family: 'Rajdhani', sans-serif;
-            font-weight: 700;
-            font-size: 1.1rem;
-            cursor: pointer;
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
-            transition: all 0.3s;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .btn-glow:hover { transform: scale(1.05); box-shadow: 0 0 25px rgba(0, 240, 255, 0.7); }
-        
-        .btn-outline {
-            background: transparent;
-            border: 1px solid var(--primary);
-            color: var(--primary);
-            padding: 10px 20px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-        .btn-outline:hover { background: var(--primary); color: #000; }
-
-        /* --- HEADER --- */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            backdrop-filter: blur(10px);
-            position: sticky; top: 0; z-index: 100;
-        }
-        .logo { font-family: 'Rajdhani', sans-serif; font-size: 2rem; font-weight: 800; color: var(--text-main); }
-        .logo span { color: var(--primary); }
-
-        /* --- HERO SECTION --- */
-        .hero {
-            text-align: center;
-            padding: 80px 0;
-            position: relative;
-        }
-        .hero h1 {
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 4rem;
-            line-height: 1;
-            margin-bottom: 20px;
-            background: -webkit-linear-gradient(0deg, #fff, var(--primary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .hero p { font-size: 1.2rem; color: var(--text-dim); max-width: 700px; margin: 0 auto 40px; }
-
-        /* --- STATS GRID --- */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 60px;
-        }
-        .stat-card {
-            background: var(--card-bg);
-            border: 1px solid rgba(255,255,255,0.1);
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 260px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid #333;
+            display: flex; flex-direction: column;
             padding: 20px;
-            border-radius: 15px;
-            text-align: center;
+            transition: all 0.3s;
         }
-        .stat-value { font-size: 2rem; font-weight: bold; color: var(--primary); font-family: 'Rajdhani', sans-serif; }
-        .stat-label { color: var(--text-dim); font-size: 0.9rem; text-transform: uppercase; }
+        .logo {
+            font-size: 1.8rem; color: var(--accent-color); font-weight: bold;
+            text-align: center; margin-bottom: 40px; text-transform: uppercase;
+            letter-spacing: 2px; text-shadow: 0 0 10px rgba(0,212,255,0.5);
+        }
+        .menu-item {
+            padding: 15px; color: #888; cursor: pointer; border-radius: 8px;
+            margin-bottom: 8px; transition: 0.3s; display: flex; align-items: center; gap: 10px;
+        }
+        .menu-item:hover, .menu-item.active {
+            background: rgba(0, 212, 255, 0.1); color: #fff;
+            border-left: 4px solid var(--accent-color);
+        }
+        .btn-logout {
+            margin-top: auto; background: #222; color: #fff; border: 1px solid #444;
+            padding: 12px; cursor: pointer; border-radius: 8px; transition: 0.3s;
+        }
+        .btn-logout:hover { background: #dd2e44; border-color: #dd2e44; }
 
-        /* --- TOKEN SECTION --- */
-        .token-box {
-            background: linear-gradient(180deg, rgba(11,11,15,0.9) 0%, rgba(0,240,255,0.05) 100%);
-            border: 1px solid var(--primary);
-            border-radius: 20px;
-            padding: 40px;
-            margin: 40px 0;
-            text-align: left;
-            position: relative;
-            overflow: hidden;
+        /* --- MAIN CONTENT --- */
+        .main-content { flex: 1; padding: 40px; overflow-y: auto; }
+
+        header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 40px; border-bottom: 1px solid #333; padding-bottom: 20px;
         }
-        .token-box::before {
-            content: "$SKY";
-            position: absolute;
-            right: -20px; bottom: -50px;
-            font-size: 15rem;
-            opacity: 0.05;
-            font-weight: 900;
-            color: var(--primary);
-            pointer-events: none;
-        }
-        .contract-address {
-            background: rgba(0,0,0,0.5);
-            padding: 10px;
-            border-radius: 8px;
-            font-family: monospace;
-            color: var(--primary);
-            word-break: break-all;
-            cursor: pointer;
-            border: 1px dashed var(--secondary);
-            display: inline-block;
+        .user-badge {
+            background: #1a1a1a; padding: 8px 15px; border-radius: 20px;
+            border: 1px solid #333; font-family: monospace; color: var(--accent-color);
         }
 
-        /* --- ACADEMY / STRATEGIES --- */
-        .strategy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
-        .strategy-card {
-            background: var(--card-bg);
-            border-top: 3px solid var(--text-dim);
-            padding: 30px;
-            border-radius: 10px;
-            transition: 0.3s;
+        /* Kártyák */
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px; margin-bottom: 40px;
         }
-        .strategy-card:hover { transform: translateY(-10px); }
-        .strategy-card.sniper { border-color: var(--success); box-shadow: 0 0 20px rgba(0, 255, 157, 0.1); }
-        .strategy-card.whale { border-color: var(--gold); box-shadow: 0 0 20px rgba(255, 215, 0, 0.1); }
+        .card {
+            background: var(--card-bg); border: 1px solid #333; border-radius: 16px;
+            padding: 25px; backdrop-filter: blur(10px); position: relative; overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4); transition: transform 0.3s;
+        }
+        .card:hover { transform: translateY(-5px); border-color: var(--accent-color); }
         
-        .feature-list li { margin-bottom: 10px; color: var(--text-dim); }
-        .feature-list i { color: var(--primary); margin-right: 10px; }
+        .card h3 { margin: 0 0 15px 0; font-size: 0.9rem; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+        .card .value { font-size: 2rem; font-weight: bold; margin-bottom: 5px; }
+        .card .sub { font-size: 0.85rem; color: #666; }
 
-        /* --- BOT INTEGRATION --- */
-        .bot-hub {
-            background: #15151a;
-            padding: 40px;
-            border-radius: 20px;
-            text-align: center;
-            margin-top: 60px;
-            border: 1px solid #333;
+        /* VIP Card Design */
+        .card.vip-card { border: 1px solid var(--vip-gold); box-shadow: 0 0 15px rgba(255, 215, 0, 0.1); }
+        .vip-badge {
+            display: inline-block; background: var(--vip-gold); color: #000;
+            padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 0.8rem;
+            vertical-align: middle; margin-left: 10px;
         }
-        .telegram-btn {
-            background: #0088cc;
-            color: white;
-            padding: 15px 30px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: bold;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            margin: 10px;
-            transition: 0.3s;
-        }
-        .telegram-btn:hover { background: #0099e6; transform: scale(1.05); }
 
-        /* --- EDUCATION ACCORDION --- */
-        .accordion { margin-top: 20px; }
-        .acc-item { margin-bottom: 10px; border: 1px solid #333; border-radius: 8px; overflow: hidden; }
-        .acc-header {
-            background: #1a1a20; padding: 15px; cursor: pointer; display: flex; justify-content: space-between; font-weight: bold;
+        /* JELZÉSEK SZEKCIÓ (AI Brain) */
+        .signal-box {
+            background: #111; border: 1px dashed #444; border-radius: 12px; padding: 20px;
+            margin-top: 20px; min-height: 150px; display: flex; align-items: center; justify-content: center;
+            flex-direction: column; text-align: center;
         }
-        .acc-content { padding: 15px; display: none; background: #0b0b0f; color: var(--text-dim); line-height: 1.6; }
-        
-        /* --- CHARTS --- */
-        .charts-container { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 50px; }
-        .chart-box { flex: 1; min-width: 300px; height: 350px; background: #000; border-radius: 10px; overflow: hidden; border: 1px solid #333; }
+        .blur-text { filter: blur(5px); user-select: none; opacity: 0.5; }
 
         @media (max-width: 768px) {
-            .hero h1 { font-size: 2.5rem; }
-            header { flex-direction: column; gap: 15px; }
+            .dashboard-container { flex-direction: column; }
+            .sidebar { width: 100%; flex-direction: row; overflow-x: auto; padding: 10px; box-sizing: border-box; }
+            .menu-item { white-space: nowrap; }
+            .logo { display: none; }
+            .main-content { padding: 20px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <header>
-            <div class="logo"><i class="fa-solid fa-layer-group"></i> Sky<span>AI</span>.Web3</div>
-            <div style="display:flex; gap:15px;">
-                <a href="https://t.me/SkyAI00bot1" target="_blank" class="btn-outline"><i class="fa-brands fa-telegram"></i> Jelzések</a>
-                <button id="connectBtn" class="btn-glow" onclick="connectWallet()">
-                    <i class="fa-solid fa-wallet"></i> Connect Wallet
-                </button>
-            </div>
-        </header>
-
-        <div class="hero">
-            <span style="color:var(--success); font-weight:bold; letter-spacing:2px; text-transform:uppercase;">BSC & SOLANA NETWORK</span>
-            <h1>A JÖVŐ KERESKEDÉSE<br>ITT KEZDŐDIK.</h1>
-            <p>A SkyAI egy új generációs ökoszisztéma. Mesterséges intelligencia által vezérelt jelzések, Web3 okosszerződések és automatizált stratégiák egy helyen.</p>
+    <div class="dashboard-container">
+        <div class="sidebar">
+            <div class="logo">SkyAI v4.0</div>
+            <div class="menu-item active" onclick="showSection('dashboard')">📊 Vezérlőpult</div>
+            <div class="menu-item" onclick="showSection('signals')">🤖 AI Jelzések</div>
+            <div class="menu-item" onclick="window.open('https://t.me/SkyAI00bot1', '_blank')">💬 Telegram Csoport</div>
             
-            <div style="display:flex; justify-content:center; gap:20px; flex-wrap:wrap;">
-                <button onclick="scrollToSection('presale')" class="btn-glow">🚀 Token Vásárlás (Pre-Sale)</button>
-                <button onclick="scrollToSection('bots')" class="btn-outline">🤖 Botok Indítása</button>
-            </div>
+            <button class="btn-logout" onclick="logout()">Kijelentkezés</button>
         </div>
 
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-value">BTC/BNB/SOL</div>
-                <div class="stat-label">Támogatott Párok</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">AI + Web3</div>
-                <div class="stat-label">Technológia</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">100M</div>
-                <div class="stat-label">$SKY Total Supply</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">0-24h</div>
-                <div class="stat-label">Piacfigyelés</div>
-            </div>
-        </div>
-
-        <div id="presale" class="token-box">
-            <h2 style="font-family:'Rajdhani'; font-size:2.5rem; margin-top:0;">🌟 $SKY Token Pre-Sale</h2>
-            <p>Légy részese a SkyAI ökoszisztémának! A token birtokosok kedvezményeket kapnak a bot használatból és szavazati jogot a DAO-ban.</p>
-            
-            <div style="margin-bottom: 20px;">
-                <strong>Contract Address (BSC):</strong><br>
-                <span class="contract-address" onclick="copyText('0xcBbaDC40Cde0F12679a6b0b74fB732E02E60fa83')">0xcBbaDC40Cde0F12679a6b0b74fB732E02E60fa83 <i class="fa-regular fa-copy"></i></span>
-            </div>
-
-            <div style="background:rgba(0,0,0,0.3); padding:20px; border-radius:15px; border:1px solid #333; max-width:500px;">
-                <h3 style="margin-top:0;">Vásárlás (BSC Láncon)</h3>
-                <label style="color:var(--text-dim); font-size:0.9rem;">Mennyit szeretnél befektetni?</label>
-                <div style="display:flex; gap:10px; margin-top:10px;">
-                    <input type="number" id="bnbAmount" placeholder="0.1" step="0.01" style="background:#111; border:1px solid #444; color:#fff; padding:10px; border-radius:8px; flex:1;">
-                    <span style="align-self:center; font-weight:bold;">BNB</span>
+        <div class="main-content">
+            <header>
+                <div>
+                    <h2 style="margin:0;">Üdvözöllek, Pilóta!</h2>
+                    <p style="margin:0; color:#666; font-size:0.9rem;">SkyAI Decentralizált Hub</p>
                 </div>
-                <p style="font-size:0.8rem; color:var(--text-dim);">1 BNB = 10,000 SKY (Becslés)</p>
-                <button class="btn-glow" style="width:100%; margin-top:10px;" onclick="buyToken()">VÁSÁRLÁS MOST</button>
-            </div>
-        </div>
+                <div id="userAddress" class="user-badge">Not Connected</div>
+            </header>
 
-        <h2 style="text-align:center; font-family:'Rajdhani'; font-size:2.5rem;">🧠 Válassz Stratégiát</h2>
-        <div class="strategy-grid">
-            <div class="strategy-card sniper">
-                <h3 style="color:var(--success); margin-top:0;"><i class="fa-solid fa-crosshairs"></i> SkyAI SNIPER</h3>
-                <p>Gyors, precíz, rövid távú kereskedés. Ideális azoknak, akik aktívak és szeretik a gyors profitot.</p>
-                <ul class="feature-list" style="list-style:none; padding:0;">
-                    <li><i class="fa-solid fa-check"></i> 15 perces / 1 órás gyertyák</li>
-                    <li><i class="fa-solid fa-check"></i> Telegram értesítések</li>
-                    <li><i class="fa-solid fa-check"></i> Magas kockázat / Magas hozam</li>
-                </ul>
-                <a href="https://t.me/SkyAI00bot" target="_blank" class="btn-outline" style="width:100%; display:block; text-align:center; margin-top:20px;">Előfizetés a Botnál</a>
+            <div class="stats-grid">
+                <div class="card" id="statusCard">
+                    <h3>Tagsági Szint</h3>
+                    <div class="value" id="membershipLevel">Betöltés...</div>
+                    <div class="sub" id="vipProgress">Min. 5,000 SKY a VIP-hez</div>
+                </div>
+
+                <div class="card">
+                    <h3>SKY Token Egyenleg</h3>
+                    <div class="value" id="skyBalance">0.00</div>
+                    <div class="sub">Contract: 0xcBba...fa83</div>
+                </div>
+
+                <div class="card">
+                    <h3>Wallet Egyenleg</h3>
+                    <div class="value" id="nativeBalance">0.00</div>
+                    <div class="sub" id="nativeSymbol">ETH/BNB</div>
+                </div>
             </div>
 
-            <div class="strategy-card whale">
-                <h3 style="color:var(--gold); margin-top:0;"><i class="fa-solid fa-user-astronaut"></i> SkyAI WHALE</h3>
-                <p>A "Bálna" stratégia. Türelmes befektetőknek, akik a trendeket lovagolják meg nagy tőkével.</p>
-                <ul class="feature-list" style="list-style:none; padding:0;">
-                    <li><i class="fa-solid fa-check"></i> 4 órás / Napos trendek</li>
-                    <li><i class="fa-solid fa-check"></i> Biztonságosabb belépők</li>
-                    <li><i class="fa-solid fa-check"></i> Kisebb tranzakciós költség</li>
-                </ul>
-                <button onclick="alert('A Whale Vault jelenleg csak privát ügyfeleknek érhető el. Vedd fel a kapcsolatot az Adminnal!')" class="btn-outline" style="width:100%; display:block; margin-top:20px; border-color:var(--gold); color:var(--gold);">Vault Csatlakozás</button>
-            </div>
-        </div>
-
-        <div id="bots" class="bot-hub">
-            <h2>🤖 Telegram Központ</h2>
-            <p>A Web3 felület mellett a Telegram botjaink biztosítják a folyamatos kapcsolattartást és menedzsmentet.</p>
-            
-            <div style="display:flex; justify-content:center; flex-wrap:wrap;">
-                <a href="https://t.me/SkyAIBusinessBot" target="_blank" class="telegram-btn"><i class="fa-solid fa-briefcase"></i> Business Bot</a>
-                <a href="https://t.me/SkyAI_PaymentBot" target="_blank" class="telegram-btn"><i class="fa-solid fa-credit-card"></i> Payment Bot</a>
-                <a href="https://t.me/SkyAI00bot1" target="_blank" class="telegram-btn" style="background:#2AABEE;"><i class="fa-solid fa-bullhorn"></i> Signal Csatorna</a>
-            </div>
-        </div>
-
-        <div class="container" style="max-width:800px; margin-top:60px;">
-            <h2 style="text-align:center; font-family:'Rajdhani';">📚 SkyAI Akadémia & Gyakori Kérdések</h2>
-            
-            <div class="accordion">
-                <div class="acc-item">
-                    <div class="acc-header" onclick="toggleAcc(this)">Hogyan csatlakoztassam a tárcámat? <i class="fa-solid fa-chevron-down"></i></div>
-                    <div class="acc-content">
-                        Kattints a jobb felső sarokban a "Connect Wallet" gombra. A rendszer automatikusan felajánlja a MetaMask (PC) vagy Phantom (Solana) csatlakozást. Telefonon használd a MetaMask app beépített böngészőjét!
+            <div class="card" style="border-color: var(--accent-color);">
+                <h3>🤖 Legutóbbi AI Jelzések (Brain v3.0)</h3>
+                
+                <div id="vipContent" style="display:none;">
+                    <div class="signal-box" style="border: 1px solid var(--accent-color); background: rgba(0,212,255,0.05);">
+                        <h4 style="margin:0 0 10px 0; color:var(--accent-color);">ÉLŐ JELZÉS</h4>
+                        <p style="font-size:1.2rem; font-weight:bold;">BTC/USDT <span style="color:#0f0;">🟢 LONG</span></p>
+                        <p>Entry: $Market | TP: Open | SL: 2%</p>
+                        <small style="color:#888;">Frissítve: Most</small>
                     </div>
                 </div>
-                <div class="acc-item">
-                    <div class="acc-header" onclick="toggleAcc(this)">Mi az a BEP-20 és miért a BSC-t használjuk? <i class="fa-solid fa-chevron-down"></i></div>
-                    <div class="acc-content">
-                        A SkyAI a Binance Smart Chain (BSC) hálózaton fut, mert itt a tranzakciós díjak (Gas fee) töredéke az Ethereum hálózaténak, és a sebesség is sokkal gyorsabb. A token szabvány neve BEP-20.
-                    </div>
-                </div>
-                <div class="acc-item">
-                    <div class="acc-header" onclick="toggleAcc(this)">Mire jó a Sniper és a Whale stratégia? <i class="fa-solid fa-chevron-down"></i></div>
-                    <div class="acc-content">
-                        A <strong>Sniper</strong> a gyors piaci mozgásokat használja ki (skalpolás), gyakori kötésekkel. A <strong>Whale</strong> (Bálna) a nagy trendfordulókat figyeli, ritkábban lép be, de nagyobb profitra törekszik hosszú távon.
-                    </div>
-                </div>
-                <div class="acc-item">
-                    <div class="acc-header" onclick="toggleAcc(this)">Hogyan kapom meg a vásárolt tokent? <i class="fa-solid fa-chevron-down"></i></div>
-                    <div class="acc-content">
-                        Ha a weboldalon keresztül vásárolsz Pre-Sale-ben, a tranzakciót manuálisan hagyjuk jóvá és küldjük ki a tokeneket a megadott tárcacímedre 24 órán belül. Később ez automatikus okosszerződéssel fog működni (Claim).
+
+                <div id="freeContent">
+                    <div class="signal-box">
+                        <p>🔒 <strong>Ez a tartalom csak VIP tagoknak elérhető.</strong></p>
+                        <p class="blur-text">BTC/USDT SHORT ENTRY 64200</p>
+                        <button onclick="window.open('https://t.me/SkyAI00bot1', '_blank')" style="background:var(--accent-color); border:none; padding:10px 20px; border-radius:5px; cursor:pointer; font-weight:bold; margin-top:10px;">Csatlakozz a Telegramhoz</button>
                     </div>
                 </div>
             </div>
+
         </div>
-
-        <div class="charts-container">
-            <div class="chart-box" id="tv-btc"></div>
-            <div class="chart-box" id="tv-bnb"></div>
-            <div class="chart-box" id="tv-sol"></div>
-        </div>
-
-        <footer style="text-align:center; padding:40px; border-top:1px solid #333; margin-top:60px; color:var(--text-dim);">
-            <p>&copy; 2025 SkyAI Project. Minden jog fenntartva.</p>
-            <p style="font-size:0.8rem;">Disclaimer: A kriptovaluta kereskedés kockázatos. A SkyAI jelzései tájékoztató jellegűek, nem minősülnek pénzügyi tanácsadásnak.</p>
-        </footer>
-
     </div>
 
     <script>
-        // CONFIG
-        const OWNER_WALLET = "0xc98415672A80a26bEC29427b7284D65B73c5Ff7B"; // A Te tárcád
+        // *** KONFIGURÁCIÓ (A config.py alapján) ***
+        const TOKEN_ADDRESS = "0xcBbaDC40Cde0F12679a6b0b74fB732E02E60fa83"; // A Contractod
+        const VIP_LIMIT = 5000;
         
-        // TradingView Widgets
-        document.addEventListener('DOMContentLoaded', () => {
-            const pairs = [
-                { id: 'tv-btc', sym: 'BINANCE:BTCUSDC' },
-                { id: 'tv-bnb', sym: 'BINANCE:BNBUSDC' },
-                { id: 'tv-sol', sym: 'BINANCE:SOLUSDC' }
-            ];
-            
-            pairs.forEach(p => {
-                new TradingView.widget({
-                    "autosize": true,
-                    "symbol": p.sym,
-                    "interval": "60",
-                    "timezone": "Europe/Budapest",
-                    "theme": "dark",
-                    "style": "1",
-                    "locale": "hu_HU",
-                    "toolbar_bg": "#f1f3f6",
-                    "enable_publishing": false,
-                    "hide_top_toolbar": true,
-                    "save_image": false,
-                    "container_id": p.id,
-                    "backgroundColor": "rgba(0, 0, 0, 1)",
-                    "hide_side_toolbar": true
-                });
-            });
-        });
+        // Minimalista ABI csak a 'balanceOf' függvényhez
+        const TOKEN_ABI = [
+            "function balanceOf(address owner) view returns (uint256)",
+            "function decimals() view returns (uint8)"
+        ];
 
-        // Accordion Logic
-        function toggleAcc(header) {
-            const content = header.nextElementSibling;
-            const icon = header.querySelector('i');
-            if (content.style.display === "block") {
-                content.style.display = "none";
-                icon.classList.remove('fa-chevron-up');
-                icon.classList.add('fa-chevron-down');
-            } else {
-                content.style.display = "block";
-                icon.classList.remove('fa-chevron-down');
-                icon.classList.add('fa-chevron-up');
-            }
-        }
+        window.onload = async function() {
+            const savedAddress = localStorage.getItem('skyai_wallet');
+            const savedChain = localStorage.getItem('skyai_chain');
 
-        // Copy Text
-        function copyText(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                alert("Cím másolva: " + text);
-            });
-        }
-
-        // Scroll
-        function scrollToSection(id) {
-            document.getElementById(id).scrollIntoView({behavior: 'smooth'});
-        }
-
-        // --- WEB3 LOGIC ---
-        let provider, signer, userAddress;
-
-        async function connectWallet() {
-            if (typeof window.ethereum === 'undefined') {
-                alert("Kérlek telepítsd a MetaMask-ot!");
+            if (!savedAddress) {
+                // Ha nincs bejelentkezve, visszaküldjük a főoldalra
+                window.location.href = "index.html";
                 return;
             }
 
+            // Cím megjelenítése a fejlécben
+            document.getElementById('userAddress').innerText = savedAddress.substring(0,6) + "..." + savedAddress.substring(savedAddress.length-4);
+            document.getElementById('nativeSymbol').innerText = savedChain;
+
+            // ADATOK BETÖLTÉSE
+            if (savedChain === 'BNB') {
+                await loadBNBData(savedAddress);
+            } else {
+                // Solana logika (egyszerűsített Placeholder, ha később SOL-t is akarsz a tokenhez)
+                document.getElementById('skyBalance').innerText = "BSC Only";
+                document.getElementById('membershipLevel').innerText = "Free Member";
+            }
+        };
+
+        async function loadBNBData(userAddress) {
+            // Ethers provider (BSC Mainnet RPC)
+            // Publikus endpointot használunk olvasásra
+            const provider = new ethers.providers.JsonRpcProvider("https://bsc-dataseed.binance.org/");
+            
             try {
-                // Kérés a csatlakozásra
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-                provider = new ethers.providers.Web3Provider(window.ethereum);
-                signer = provider.getSigner();
-                userAddress = await signer.getAddress();
+                // 1. Native BNB Egyenleg lekérése
+                const balanceBNB = await provider.getBalance(userAddress);
+                document.getElementById('nativeBalance').innerText = parseFloat(ethers.utils.formatEther(balanceBNB)).toFixed(4);
 
-                // Gomb frissítése
-                const btn = document.getElementById('connectBtn');
-                btn.innerHTML = `<i class="fa-solid fa-user-check"></i> ${userAddress.substring(0,6)}...${userAddress.substring(38)}`;
-                btn.style.background = "var(--success)";
-                btn.style.color = "#000";
+                // 2. SKY Token Egyenleg lekérése a Contractból
+                const contract = new ethers.Contract(TOKEN_ADDRESS, TOKEN_ABI, provider);
+                const rawTokenBalance = await contract.balanceOf(userAddress);
+                
+                // 18 tizedesjeggyel számolunk (standard ERC20/BEP20)
+                const tokenBalance = parseFloat(ethers.utils.formatEther(rawTokenBalance));
 
-                // Hálózat ellenőrzése (BSC Mainnet: 56)
-                const network = await provider.getNetwork();
-                if (network.chainId !== 56) {
-                    // Megpróbáljuk átváltani
-                    try {
-                        await window.ethereum.request({
-                            method: 'wallet_switchEthereumChain',
-                            params: [{ chainId: '0x38' }], // 56 hex
-                        });
-                    } catch (switchError) {
-                        alert("Kérlek válts át Binance Smart Chain (BSC) hálózatra a tárcádban!");
-                    }
+                // UI Frissítés (Egyenleg kiírása)
+                document.getElementById('skyBalance').innerText = tokenBalance.toLocaleString('hu-HU', {maximumFractionDigits: 2});
+
+                // 3. VIP Státusz Ellenőrzés
+                if (tokenBalance >= VIP_LIMIT) {
+                    activateVIP();
+                } else {
+                    document.getElementById('membershipLevel').innerText = "Free Member";
+                    document.getElementById('membershipLevel').style.color = "#888";
                 }
 
             } catch (error) {
-                console.error(error);
-                alert("Hiba a csatlakozáskor.");
+                console.error("Hiba az adatok lekérésekor:", error);
+                document.getElementById('skyBalance').innerText = "Hiba";
             }
         }
 
-        async function buyToken() {
-            if (!signer) {
-                alert("Először csatlakoztasd a tárcádat!");
-                return;
-            }
+        function activateVIP() {
+            const levelText = document.getElementById('membershipLevel');
+            levelText.innerHTML = "⭐️ VIP TAG";
+            levelText.style.color = "var(--vip-gold)";
+            levelText.style.textShadow = "0 0 10px rgba(255,215,0,0.5)";
+            
+            // Kártya stílus módosítása
+            document.getElementById('statusCard').classList.add('vip-card');
+            document.getElementById('vipProgress').innerText = "Jogosult vagy az AI Jelzésekre!";
+            
+            // VIP Tartalom (AI Jelzések) feloldása
+            document.getElementById('freeContent').style.display = 'none';
+            document.getElementById('vipContent').style.display = 'block';
+        }
 
-            const amountInput = document.getElementById('bnbAmount').value;
-            if (!amountInput || amountInput <= 0) {
-                alert("Adj meg egy érvényes BNB összeget!");
-                return;
-            }
+        function logout() {
+            // Kilépéskor töröljük a localStorage-t és visszaugrunk
+            localStorage.removeItem('skyai_wallet');
+            localStorage.removeItem('skyai_chain');
+            window.location.href = "index.html";
+        }
 
-            try {
-                // Tranzakció küldése
-                const tx = await signer.sendTransaction({
-                    to: OWNER_WALLET,
-                    value: ethers.utils.parseEther(amountInput)
-                });
-
-                alert("Tranzakció elküldve! Kérlek várd meg a visszaigazolást. Hash: " + tx.hash);
-                console.log("Tx Hash:", tx.hash);
-                
-                // Itt lehetne egy visszajelzést küldeni a backendnek/botnak, de most:
-                window.open(`https://t.me/SkyAI_PaymentBot?start=TX_${tx.hash}`, '_blank');
-
-            } catch (error) {
-                console.error(error);
-                alert("Tranzakció megszakítva vagy hiba történt.");
-            }
+        function showSection(section) {
+            console.log("Navigálás:", section);
+            // Itt lehetne később több aloldalt kezelni (pl. Settings tab)
         }
     </script>
 </body>
