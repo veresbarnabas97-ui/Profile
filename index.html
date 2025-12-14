@@ -3,98 +3,459 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkyAI Dashboard | VIP Area</title>
-    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;500;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
+    <title>Veres Barnabás | SkyAI Founder Profile</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
 
     <style>
-        body { background: #020205; color: #fff; font-family: 'Exo 2', sans-serif; margin: 0; padding: 20px; }
-        .container { max-width: 1000px; margin: 0 auto; }
-        
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; border-bottom: 1px solid #333; padding-bottom: 20px; }
-        .logo { font-size: 1.5rem; font-weight: bold; color: #00d2ff; }
-        .back-link { color: #888; text-decoration: none; font-size: 0.9rem; }
-        
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        
-        .card { background: #0b0b10; border: 1px solid #222; padding: 30px; border-radius: 12px; }
-        .card h3 { color: #888; margin-top: 0; font-size: 0.9rem; text-transform: uppercase; }
-        .card .value { font-size: 2rem; font-weight: bold; margin: 10px 0; }
-        .card .sub { font-size: 0.8rem; color: #666; }
+        /* ================================================= */
+        /* STYLES (Keep Original Design) */
+        /* ================================================= */
+        :root {
+            --primary-text: #f0f0f0;
+            --muted-text: #aaaaaa;
+            --accent-color: #00d4ff;      /* SkyAI Blue */
+            --solana-color: #14f195;      /* Solana Green */
+            --bg-color: #050505;
+            --card-bg: #111111;
+            --font-main: 'Roboto', sans-serif;
+            --container-width: 1000px;
+        }
 
-        .vip-active { border-color: #ffd700; box-shadow: 0 0 15px rgba(255, 215, 0, 0.1); }
-        .vip-text { color: #ffd700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+        body {
+            font-family: var(--font-main);
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--primary-text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Background Effect */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 212, 255, 0.08) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(20, 241, 149, 0.08) 0%, transparent 20%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .container {
+            width: 90%;
+            max-width: var(--container-width);
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* --- HEADER & WEB3 --- */
+        header {
+            padding: 30px 0;
+            background: rgba(0,0,0,0.8);
+            border-bottom: 1px solid #333;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .btn-connect {
+            background: linear-gradient(90deg, var(--accent-color), var(--solana-color));
+            color: #000;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+        }
+        .btn-connect:hover { transform: scale(1.05); filter: brightness(1.2); }
+
+        /* Navigation */
+        nav {
+            text-align: center;
+            margin-top: 20px;
+        }
+        nav a {
+            color: var(--primary-text);
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            transition: color 0.3s;
+        }
+        nav a:hover { color: var(--accent-color); }
+
+        /* --- SECTIONS --- */
+        section { padding: 50px 0; border-bottom: 1px solid #222; }
+
+        h2 {
+            color: var(--accent-color);
+            text-transform: uppercase;
+            border-left: 4px solid var(--accent-color);
+            padding-left: 15px;
+            margin-bottom: 30px;
+        }
+
+        /* --- RESUME IMAGE --- */
+        .resume-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .resume-container img {
+            max-width: 100%;
+            width: 800px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            box-shadow: 0 0 30px rgba(0, 234, 255, 0.1);
+        }
+
+        /* --- ROCKET SECTION --- */
+        .rocket-section {
+            text-align: center;
+            padding: 40px;
+            border: 2px dashed #333;
+            border-radius: 20px;
+            background: linear-gradient(180deg, rgba(20, 241, 149, 0.03) 0%, rgba(0, 212, 255, 0.03) 100%);
+            margin-top: 30px;
+        }
+        .rocket-btn {
+            font-size: 4em;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.4s;
+            display: block;
+            margin: 10px auto;
+        }
+        .rocket-btn:hover { transform: scale(1.2) rotate(-10deg); text-shadow: 0 0 20px #fff; }
+        .rocket-btn:disabled { opacity: 0.3; cursor: not-allowed; filter: grayscale(1); }
+
+        /* --- CHART GRID --- */
+        .charts-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        .chart-box {
+            flex: 1;
+            min-width: 300px;
+            height: 350px;
+            background: #111;
+            border-radius: 8px;
+            border: 1px solid #333;
+            overflow: hidden;
+        }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none; justify-content: center; align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background: #1a1a1a;
+            padding: 30px;
+            border-radius: 20px;
+            width: 300px;
+            text-align: center;
+            border: 1px solid #444;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+        }
+        .wallet-option {
+            display: flex; align-items: center; justify-content: center;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #444;
+            border-radius: 10px;
+            background: #222;
+            color: #fff;
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: bold;
+        }
+        .wallet-option:hover { background: #333; border-color: #fff; }
+        .wallet-option.bnb:hover { border-color: var(--accent-color); }
+        .wallet-option.sol:hover { border-color: var(--solana-color); }
+
+        /* Grid */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+        ul.styled-list { list-style: none; padding: 0; }
+        ul.styled-list li { margin-bottom: 12px; padding-left: 20px; position: relative; }
+        ul.styled-list li::before { content: '•'; color: var(--accent-color); position: absolute; left: 0; }
+        .highlight { color: var(--accent-color); font-weight: bold; }
+        a.link { color: inherit; text-decoration: none; border-bottom: 1px dotted var(--accent-color); }
+
+        @media (max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; }
+            .header-content { flex-direction: column; gap: 15px; }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="logo">SKYAI DASHBOARD</div>
-            <a href="../index.html" class="back-link">← Back to Home</a>
-        </div>
 
-        <div style="margin-bottom: 20px;">
-            User: <span id="userAddress" style="font-family:monospace; color:#00d2ff;">Loading...</span>
-        </div>
-
-        <div class="grid">
-            <div class="card" id="statusCard">
-                <h3>Membership Status</h3>
-                <div class="value" id="membershipLevel">Loading...</div>
-                <div class="sub">Requirement: 5,000 SKY</div>
-            </div>
-
-            <div class="card">
-                <h3>SKY Balance</h3>
-                <div class="value" id="skyBalance">0.00</div>
-                <div class="sub">Contract: 0xcBba...fa83</div>
-            </div>
-
-            <div class="card">
-                <h3>BNB Balance</h3>
-                <div class="value" id="nativeBalance">0.00</div>
-                <div class="sub">Native Wallet</div>
-            </div>
+    <div class="modal-overlay" id="walletModal">
+        <div class="modal-content">
+            <h3 style="margin-top:0;">Select Network</h3>
+            <button class="wallet-option bnb" onclick="selectWallet('BNB')">
+                🔵 BNB Chain (MetaMask)
+            </button>
+            <button class="wallet-option sol" onclick="selectWallet('SOLANA')">
+                🟢 Solana (Phantom)
+            </button>
+            <button onclick="closeModal()" style="background:none; border:none; color:#666; margin-top:10px; cursor:pointer;">Cancel</button>
         </div>
     </div>
 
-    <script>
-        const TOKEN_ADDRESS = "0xcBbaDC40Cde0F12679a6b0b74fB732E02E60fa83";
-        const VIP_LIMIT = 5000;
-        const TOKEN_ABI = ["function balanceOf(address owner) view returns (uint256)", "function decimals() view returns (uint8)"];
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div>
+                    <h1>VERES BARNABÁS</h1>
+                    <p style="margin:0; color:#888;">Web3 Visionary & SkyAI Founder</p>
+                </div>
+                <button id="connectBtn" class="btn-connect" onclick="openModal()">Connect Wallet</button>
+            </div>
+            <nav>
+                <a href="#resume">About Me</a>
+                <a href="#skyai">SkyAI Project</a>
+                <a href="#charts">Live Market</a>
+                <a href="#contact">Contact</a>
+            </nav>
+        </div>
+    </header>
 
-        window.onload = async function() {
-            const savedAddress = localStorage.getItem('skyai_wallet');
-            if (!savedAddress) { window.location.href = "../index.html"; return; }
-
-            document.getElementById('userAddress').innerText = savedAddress;
-
-            const provider = new ethers.providers.JsonRpcProvider("https://bsc-dataseed.binance.org/");
+    <section id="resume">
+        <div class="container">
+            <div class="resume-container">
+                <img src="../cv.jpg" alt="Veres Barnabás CV" onerror="this.style.display='none'; document.getElementById('cv-placeholder').style.display='block'">
+                <div id="cv-placeholder" style="display:none; padding:50px; border:1px dashed #444;">Image not found. Please upload cv.jpg.</div>
+            </div>
             
+            <div class="grid-2">
+                <div>
+                    <h2>👤 About Me</h2>
+                    <p>I am <strong>Veres Barnabás</strong> (born 1997.07.24), a dedicated and resilient professional. I hold a high school diploma with a specialization in physical education, which instilled in me physical and mental endurance. I communicate effectively in both English and German.</p>
+                    <p>I have over 7 years of experience in high-demand manufacturing environments, where precision and focus are essential. I am now applying this discipline and structured thinking to the world of <strong>Web3 and Blockchain Development</strong>.</p>
+                </div>
+                <div>
+                    <h2>🎯 SkyAI Vision</h2>
+                    <p>My goal is to build <strong>SkyAI</strong>: the fusion of Artificial Intelligence and Blockchain technology. I believe in a decentralized future.</p>
+                    <ul class="styled-list">
+                        <li>Domain: <span class="highlight">veresbarnabas.bnb</span></li>
+                        <li>Token: Sky Token (BSC Deployment Active)</li>
+                        <li>Platform: Web3 + Telegram Bot Integration</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="skyai">
+        <div class="container">
+            <h2>🚀 SkyAI Launchpad & Support</h2>
+            <p>Support the development directly with crypto! The system automatically detects your connected network.</p>
+            
+            <div class="rocket-section">
+                <h3>Launch the Rocket! (5 USD)</h3>
+                <p style="font-size: 0.9em; color: #888; margin-bottom:20px;">
+                    <span id="statusText">🔴 Not Connected</span>
+                </p>
+                
+                <button class="rocket-btn" id="rocketBtn" onclick="launchRocket()" disabled>🚀</button>
+                <div id="txStatus" style="margin-top:20px; font-weight:bold; color:var(--accent-color)">Connect your wallet to launch!</div>
+            </div>
+        </div>
+    </section>
+
+    <section id="charts">
+        <div class="container">
+            <h2>💹 Live Market Data</h2>
+            <div class="charts-wrapper">
+                <div class="chart-box">
+                    <div class="tradingview-widget-container" style="height:100%;width:100%">
+                        <div class="tradingview-widget-container__widget" style="height:100%;width:100%"></div>
+                        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js" async>
+                        { "symbols": [["BTC/USDC", "BINANCE:BTCUSDC|1D"]], "width": "100%", "height": "100%", "locale": "en", "colorTheme": "dark", "autosize": true, "showVolume": false, "showMA": false, "hideDateRanges": false, "hideMarketStatus": false, "scalePosition": "right", "scaleMode": "Normal", "fontFamily": "Roboto, sans-serif", "noTimeScale": false, "valuesTracking": "1", "changeMode": "price-and-percent", "chartType": "area", "lineColor": "#F7931A", "bottomColor": "rgba(247, 147, 26, 0.1)", "topColor": "rgba(247, 147, 26, 0.3)" }
+                        </script>
+                    </div>
+                </div>
+                <div class="chart-box">
+                    <div class="tradingview-widget-container" style="height:100%;width:100%">
+                        <div class="tradingview-widget-container__widget" style="height:100%;width:100%"></div>
+                        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js" async>
+                        { "symbols": [["BNB/USDC", "BINANCE:BNBUSDC|1D"]], "width": "100%", "height": "100%", "locale": "en", "colorTheme": "dark", "autosize": true, "showVolume": false, "showMA": false, "hideDateRanges": false, "hideMarketStatus": false, "scalePosition": "right", "scaleMode": "Normal", "fontFamily": "Roboto, sans-serif", "noTimeScale": false, "valuesTracking": "1", "changeMode": "price-and-percent", "chartType": "area", "lineColor": "#F3BA2F", "bottomColor": "rgba(243, 186, 47, 0.1)", "topColor": "rgba(243, 186, 47, 0.3)" }
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact">
+        <div class="container">
+            <h2>🔗 Contact</h2>
+            <div class="grid-2">
+                <div>
+                    <ul class="styled-list">
+                        <li><span class="highlight">Phone:</span> <a href="tel:+36705983697" class="link">+36-70/5983697</a></li>
+                        <li><span class="highlight">Email:</span> <a href="mailto:veres.barnabas97@gmail.com" class="link">veres.barnabas97@gmail.com</a></li>
+                        <li><span class="highlight">Address:</span> 6090 Kunszentmiklós, Rákóczi Ferenc u. 74.</li>
+                    </ul>
+                </div>
+                <div>
+                    <ul class="styled-list">
+                        <li><span class="highlight">BNB Address:</span> 0xc984...Ff7B</li>
+                        <li><span class="highlight">SOL Address:</span> 4iub...Bk3z</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 Veres Barnabás | SkyAI Project | All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        // *** WALLET ADDRESSES (Founder Wallet) ***
+        const MY_BNB_ADDRESS = "0xc98415672A80a26bEC29427b7284D65B73c5Ff7B";
+        const MY_SOL_ADDRESS = "4iubzdpP14Mo32iRseD7nZEhP1RVLWjjwbsh228uBk3z"; 
+        
+        // Variables
+        let currentChain = null;
+        let provider = null;
+        let signer = null;
+
+        // UI Elements
+        const modal = document.getElementById('walletModal');
+        const connectBtn = document.getElementById('connectBtn');
+        const statusText = document.getElementById('statusText');
+        const rocketBtn = document.getElementById('rocketBtn');
+        const txStatus = document.getElementById('txStatus');
+
+        function openModal() { modal.style.display = 'flex'; }
+        function closeModal() { modal.style.display = 'none'; }
+
+        async function selectWallet(chain) {
+            closeModal();
+            txStatus.innerText = "Connecting...";
             try {
-                // BNB Balance
-                const balanceBNB = await provider.getBalance(savedAddress);
-                document.getElementById('nativeBalance').innerText = parseFloat(ethers.utils.formatEther(balanceBNB)).toFixed(4);
-
-                // Token Balance
-                const contract = new ethers.Contract(TOKEN_ADDRESS, TOKEN_ABI, provider);
-                const rawBalance = await contract.balanceOf(savedAddress);
-                const tokenBalance = parseFloat(ethers.utils.formatEther(rawBalance));
-
-                document.getElementById('skyBalance').innerText = tokenBalance.toLocaleString();
-
-                // VIP Check
-                if (tokenBalance >= VIP_LIMIT) {
-                    document.getElementById('membershipLevel').innerText = "★ VIP MEMBER";
-                    document.getElementById('membershipLevel').classList.add('vip-text');
-                    document.getElementById('statusCard').classList.add('vip-active');
-                } else {
-                    document.getElementById('membershipLevel').innerText = "Free User";
-                }
-            } catch (e) {
-                console.error(e);
+                if (chain === 'BNB') await connectBNB();
+                else if (chain === 'SOLANA') await connectSolana();
+            } catch (error) {
+                alert("Error: " + error.message);
             }
-        };
+        }
+
+        async function connectBNB() {
+            if (typeof window.ethereum === 'undefined') { alert("MetaMask not installed!"); return; }
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+            provider = new ethers.providers.Web3Provider(window.ethereum);
+            signer = provider.getSigner();
+            const address = await signer.getAddress();
+            
+            // Switch to BSC (56) if needed
+            const network = await provider.getNetwork();
+            if (network.chainId !== 56) {
+                try {
+                    await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x38' }] });
+                } catch(e) { console.log("Network switch error", e); }
+            }
+
+            setConnectedState(address, 'BNB');
+        }
+
+        async function connectSolana() {
+            if (!window.solana || !window.solana.isPhantom) { 
+                alert("Phantom Wallet not installed!"); 
+                window.open("https://phantom.app/", "_blank");
+                return; 
+            }
+            const resp = await window.solana.connect();
+            setConnectedState(resp.publicKey.toString(), 'SOLANA');
+        }
+
+        // --- CONNECTED STATE & LOGIC ---
+        function setConnectedState(address, chain) {
+            currentChain = chain;
+            const shortAddr = address.substring(0,6) + "..." + address.substring(address.length-4);
+            
+            // UI Update
+            connectBtn.innerHTML = shortAddr;
+            connectBtn.style.background = "var(--accent-color)";
+            connectBtn.style.color = "#000";
+
+            statusText.innerHTML = `🟢 Connected: <strong>${chain}</strong>`;
+            
+            rocketBtn.disabled = false;
+            rocketBtn.style.filter = "none";
+            txStatus.innerText = `Ready for Launch (${chain})!`;
+        }
+
+        async function launchRocket() {
+            if (!currentChain) return;
+            txStatus.innerText = "Signing Transaction...";
+
+            try {
+                if (currentChain === 'BNB') {
+                    const tx = await signer.sendTransaction({
+                        to: MY_BNB_ADDRESS,
+                        value: ethers.utils.parseEther("0.0083") // approx 5 USD
+                    });
+                    txStatus.innerText = "Sending BNB... ⏳";
+                    await tx.wait();
+                    alert("BNB Support Successful! Thank you! 🚀");
+                } 
+                else if (currentChain === 'SOLANA') {
+                    const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
+                    const transaction = new solanaWeb3.Transaction().add(
+                        solanaWeb3.SystemProgram.transfer({
+                            fromPubkey: window.solana.publicKey,
+                            toPubkey: new solanaWeb3.PublicKey(MY_SOL_ADDRESS),
+                            lamports: 0.033 * 1000000000, // approx 5 USD
+                        })
+                    );
+                    const { blockhash } = await connection.getLatestBlockhash();
+                    transaction.recentBlockhash = blockhash;
+                    transaction.feePayer = window.solana.publicKey;
+                    
+                    const { signature } = await window.solana.signAndSendTransaction(transaction);
+                    txStatus.innerText = "Sending SOL... ⏳";
+                    await connection.confirmTransaction(signature);
+                    alert("Solana Support Successful! Thank you! 🚀");
+                }
+                txStatus.innerText = "LAUNCH SUCCESSFUL! 🚀";
+            } catch (error) {
+                console.error(error);
+                txStatus.innerText = "Error or User Rejected.";
+            }
+        }
     </script>
 </body>
 </html>
