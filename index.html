@@ -3,93 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Veres Barnabás | Founder Profile</title>
+    <title>SkyAI | Founder Profile</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Space+Grotesk:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
     <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
 
     <style>
-        body { background: #050505; color: #fff; font-family: 'Space Grotesk', sans-serif; margin: 0; padding: 40px 20px; }
-        .container { max-width: 900px; margin: 0 auto; }
+        body { background: #050505; color: #fff; font-family: 'Space Grotesk', sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .container { max-width: 1000px; width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
         
-        .profile-card {
-            background: linear-gradient(135deg, #0b0b0f, #111);
-            border: 1px solid #333; border-radius: 20px; padding: 50px; text-align: center;
-            box-shadow: 0 0 50px rgba(0,0,0,0.8); position: relative; overflow: hidden;
-        }
-        .profile-card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 5px;
-            background: linear-gradient(90deg, #d4af37, #00d2ff);
-        }
+        .card { background: #0b0b0f; border: 1px solid #222; padding: 40px; border-radius: 20px; position: relative; }
+        .card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, #d4af37, #00d2ff); }
 
-        .avatar {
-            width: 180px; height: 180px; border-radius: 50%; object-fit: cover;
-            border: 4px solid #d4af37; box-shadow: 0 0 30px rgba(212, 175, 55, 0.3); margin-bottom: 25px;
-        }
+        h1 { font-family: 'Rajdhani'; font-size: 2.5rem; margin-bottom: 10px; }
+        .role { color: #d4af37; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 20px; font-size: 0.9rem; }
+        .bio { color: #888; line-height: 1.6; font-size: 1rem; margin-bottom: 30px; }
 
-        h1 { font-family: 'Rajdhani'; font-size: 3rem; margin: 0; }
-        .role { color: #d4af37; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; }
-        
-        .bio { color: #888; max-width: 600px; margin: 0 auto 30px; line-height: 1.8; font-size: 1.1rem; }
+        .info-row { display: flex; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px solid #222; padding-bottom: 10px; }
+        .label { color: #555; font-size: 0.8rem; text-transform: uppercase; }
+        .val { font-family: monospace; color: #fff; }
 
-        .info-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 40px; text-align: left;
-        }
-        .info-box { background: rgba(255,255,255,0.03); padding: 20px; border-radius: 10px; border: 1px solid #222; }
-        .info-label { color: #555; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 5px; }
-        .info-val { font-family: monospace; color: #fff; word-break: break-all; }
+        .btn-action { width: 100%; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; }
+        .btn-bnb { background: rgba(240, 185, 11, 0.1); color: #f0b90b; border: 1px solid #f0b90b; }
+        .btn-bnb:hover { background: #f0b90b; color: #000; }
+        .btn-sol { background: rgba(20, 241, 149, 0.1); color: #14f195; border: 1px solid #14f195; }
+        .btn-sol:hover { background: #14f195; color: #000; }
 
-        .btn-contact {
-            background: #fff; color: #000; padding: 15px 30px; border-radius: 50px; text-decoration: none;
-            font-weight: bold; display: inline-flex; align-items: center; gap: 10px; margin-top: 30px;
-            transition: 0.3s;
-        }
-        .btn-contact:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(255,255,255,0.3); }
+        .back-link { position: absolute; top: 20px; left: 20px; color: #666; text-decoration: none; display: flex; align-items: center; gap: 5px; }
+        .back-link:hover { color: #fff; }
 
-        .back-link { position: absolute; top: 20px; left: 20px; color: #666; text-decoration: none; }
+        @media (max-width: 768px) { .container { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
+    <a href="../index.html" class="back-link"><i class="fas fa-arrow-left"></i> BACK TO TERMINAL</a>
+
     <div class="container">
-        <div class="profile-card">
-            <a href="../index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Terminal</a>
-            
-            <img src="../cv.jpg" alt="Veres Barnabás" class="avatar" onerror="this.src='https://via.placeholder.com/150'">
-            
+        <div class="card">
+            <img src="../cv.jpg" style="width:120px; height:120px; border-radius:50%; border:3px solid #d4af37; margin-bottom:20px; object-fit: cover;" onerror="this.style.display='none'">
             <h1>Veres Barnabás</h1>
             <div class="role">SkyAI Founder & Lead Developer</div>
-            
             <p class="bio">
-                "Disciplined innovator with 7+ years of high-precision experience. Architecting the future of Decentralized AI Trading to bridge the gap between human intuition and machine efficiency."
+                "Disciplined innovator with 7+ years of experience. Architecting the future of Decentralized AI Trading."
+            </p>
+            
+            <div class="info-row">
+                <span class="label">Email</span>
+                <span class="val">veres.barnabas97@gmail.com</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Location</span>
+                <span class="val">Hungary</span>
+            </div>
+            <div class="info-row" style="border:none;">
+                <span class="label">Wallet Status</span>
+                <span class="val" id="walletStatus" style="color:#00d2ff">Checking...</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 style="font-family:'Rajdhani'; margin-bottom:20px;">🚀 FUEL THE MISSION</h2>
+            <p style="color:#666; font-size:0.9rem; margin-bottom:30px;">
+                Support the development directly via Blockchain. Choose your network below.
             </p>
 
-            <a href="mailto:veres.barnabas97@gmail.com" class="btn-contact">
-                <i class="fas fa-envelope"></i> Contact Me
-            </a>
+            <button class="btn-action btn-bnb" onclick="donate('BNB')">
+                <i class="fas fa-paper-plane"></i> SEND BNB SUPPORT (BSC)
+            </button>
 
-            <div class="info-grid">
-                <div class="info-box">
-                    <div class="info-label">Official Email</div>
-                    <div class="info-val">veres.barnabas97@gmail.com</div>
-                </div>
-                <div class="info-box">
-                    <div class="info-label">Location</div>
-                    <div class="info-val">Kunszentmiklós, Hungary</div>
-                </div>
-                <div class="info-box">
-                    <div class="info-label">Verified BNB Wallet</div>
-                    <div class="info-val" style="color:#f0b90b">0xC424c3119e5D1fA6dD91eF72aF25e1F4A260f69C</div>
-                </div>
-                <div class="info-box">
-                    <div class="info-label">Verified SOL Wallet</div>
-                    <div class="info-val" style="color:#14f195">4iubzdpP14Mo32iRseD7nZEhP1RVLWjjwbsh228uBk3z</div>
-                </div>
+            <button class="btn-action btn-sol" onclick="donate('SOL')">
+                <i class="fas fa-bolt"></i> SEND SOLANA SUPPORT (PHANTOM)
+            </button>
+
+            <div id="txStatus" style="margin-top:20px; text-align:center; color:#888; font-size:0.9rem;">
+                Ready for launch...
             </div>
         </div>
     </div>
 
+    <script>
+        const OWNER_BSC = "0xc98415672A80a26bEC29427b7284D65B73c5Ff7B";
+        const OWNER_SOL = "4iubzdpP14Mo32iRseD7nZEhP1RVLWjjwbsh228uBk3z";
+        
+        let chain = localStorage.getItem('skyai_chain');
+        let wallet = localStorage.getItem('skyai_wallet');
+
+        window.onload = () => {
+            if(wallet) {
+                document.getElementById('walletStatus').innerText = `Connected (${chain})`;
+            } else {
+                document.getElementById('walletStatus').innerText = "Not Connected";
+            }
+        };
+
+        async function donate(network) {
+            const status = document.getElementById('txStatus');
+            
+            if (network === 'BNB') {
+                if(chain !== 'BSC') { alert("Please connect BSC Wallet in Terminal!"); return; }
+                status.innerText = "Initiating BNB Transaction...";
+                
+                try {
+                    const provider = new ethers.providers.Web3Provider(window.ethereum);
+                    const signer = provider.getSigner();
+                    const tx = await signer.sendTransaction({
+                        to: OWNER_BSC,
+                        value: ethers.utils.parseEther("0.02")
+                    });
+                    status.innerText = "BNB Sent! 🚀";
+                    await tx.wait();
+                    alert("Support Received via BSC!");
+                } catch(e) { status.innerText = "Failed."; }
+            } 
+            
+            else if (network === 'SOL') {
+                if(chain !== 'SOL') { alert("Please connect Phantom Wallet in Terminal!"); return; }
+                status.innerText = "Initiating SOL Transaction...";
+
+                try {
+                    const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('mainnet-beta'));
+                    const transaction = new solanaWeb3.Transaction().add(
+                        solanaWeb3.SystemProgram.transfer({
+                            fromPubkey: window.solana.publicKey,
+                            toPubkey: new solanaWeb3.PublicKey(OWNER_SOL),
+                            lamports: 0.1 * 1000000000
+                        })
+                    );
+                    const { blockhash } = await connection.getLatestBlockhash();
+                    transaction.recentBlockhash = blockhash;
+                    transaction.feePayer = window.solana.publicKey;
+                    const { signature } = await window.solana.signAndSendTransaction(transaction);
+                    status.innerText = "SOL Sent! 🚀";
+                    await connection.confirmTransaction(signature);
+                    alert("Support Received via Solana!");
+                } catch(e) { status.innerText = "Failed."; console.error(e); }
+            }
+        }
+    </script>
 </body>
 </html>
