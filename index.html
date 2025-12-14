@@ -30,6 +30,11 @@
         .btn-sol { background: rgba(20, 241, 149, 0.1); color: #14f195; border: 1px solid #14f195; }
         .btn-sol:hover { background: #14f195; color: #000; }
 
+        .roadmap-mini { margin-top: 30px; }
+        .roadmap-mini h3 { font-family:'Rajdhani'; color:#00d2ff; margin-bottom:15px; }
+        .roadmap-mini li { margin-bottom: 8px; font-size: 0.9rem; color: #aaa; list-style: none; }
+        .roadmap-mini li::before { content: '✓ '; color: #00ff9d; }
+
         .back-link { position: absolute; top: 20px; left: 20px; color: #666; text-decoration: none; display: flex; align-items: center; gap: 5px; }
         .back-link:hover { color: #fff; }
 
@@ -38,7 +43,7 @@
 </head>
 <body>
 
-    <a href="https://veresbarnabas97-ui.github.io/SkyAI/" class="back-link"><i class="fas fa-arrow-left"></i> BACK TO TERMINAL</a>
+    <a href="../index.html" class="back-link"><i class="fas fa-arrow-left"></i> BACK TO TERMINAL</a>
 
     <div class="container">
         <div class="card">
@@ -66,7 +71,7 @@
         <div class="card">
             <h2 style="font-family:'Rajdhani'; margin-bottom:20px;">🚀 FUEL THE MISSION</h2>
             <p style="color:#666; font-size:0.9rem; margin-bottom:30px;">
-                Support the development directly via Blockchain. Choose your network below.
+                Support the development directly via Blockchain.
             </p>
 
             <button class="btn-action btn-bnb" onclick="donate('BNB')">
@@ -77,14 +82,23 @@
                 <i class="fas fa-bolt"></i> SEND SOLANA SUPPORT (PHANTOM)
             </button>
 
-            <div id="txStatus" style="margin-top:20px; text-align:center; color:#888; font-size:0.9rem;">
+            <div id="txStatus" style="margin-top:10px; text-align:center; color:#888; font-size:0.9rem; margin-bottom:30px;">
                 Ready for launch...
+            </div>
+
+            <div class="roadmap-mini">
+                <h3>🗺️ Upcoming Milestones</h3>
+                <ul>
+                    <li>Smart Contract Verification (Completed)</li>
+                    <li>Auto-Presale Distribution (In Progress)</li>
+                    <li>Solana Integration (Planned)</li>
+                </ul>
             </div>
         </div>
     </div>
 
     <script>
-        const OWNER_BSC = "0xc98415672A80a26bEC29427b7284D65B73c5Ff7B";
+        const OWNER_BSC = "0xC424c3119e5D1fA6dD91eF72aF25e1F4A260f69C";
         const OWNER_SOL = "4iubzdpP14Mo32iRseD7nZEhP1RVLWjjwbsh228uBk3z";
         
         let chain = localStorage.getItem('skyai_chain');
